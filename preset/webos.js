@@ -1,7 +1,7 @@
 import {fetchAppId} from '@enact/webos/application';
 import {info} from '@enact/webos/pmloglib';
 
-import {configure as conf, fetchConfig} from '../analytics';
+import {configure as conf, fetchConfig} from '../index';
 
 const config = {
     enabled: false,
