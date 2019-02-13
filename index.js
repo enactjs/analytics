@@ -38,6 +38,13 @@ const config = {
     // by `exclude` will be logged.
     include: null,
 
+    // Array of events or object mapping events to filter functions
+    // listeners: ['focus', 'load']
+    // listeners: {
+    //     focus: (ev) => ev.nodeName === 'button' // only report on focus events for buttons
+    // }
+    listeners: null,
+
     // Required application-defined function to log the events
     log: null,
 
