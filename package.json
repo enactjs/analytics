@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/enactjs/analytics/issues"
   },
-  "homepage": "https://github.com/enactjs/analytics#readme"
+  "homepage": "https://github.com/enactjs/analytics#readme",
+  "dependencies": {
+    "@enact/core": "^2.3.0",
+    "@enact/webos": "^2.3.0"
+  }
 }
