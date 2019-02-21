@@ -6,7 +6,7 @@ import {configure as conf, fetchConfig} from '../index';
 const config = {
     enabled: false,
     log: (message) => {
-        info('@enact/analytics', message);
+        info('NL_ENACT', message);
     }
 };
 
