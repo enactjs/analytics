@@ -110,21 +110,18 @@ const resolveLabel = (node) => {
 };
 
 // Default message formatter
-const formatMessage = (node, {type}) => {
+const format = (node, ev) => {
+    const {type} = ev;
     if (node) {
         return {
             time: Date.now(),
             type,
-            label: resolveLabel(node)
+            label: resolveLabel(node),
+            ...(config.format && config.format(node, ev) || null)
         };
     }
 
     return null;
-};
-
-// Invokes the config's format function (if it exists) and returns the result
-const format = (target, ev) => {
-    return config.format && config.format(target, ev) || formatMessage(target, ev);
 };
 
 const logJob = new Job(flushLogQueue);
