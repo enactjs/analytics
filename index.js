@@ -69,8 +69,8 @@ const config = {
     // Optional custom filter function to remove entries from the log
     filter: null,
 
-    // Function accepting the message (as matched by the selector) and the original event and returning
-    // a log entry in whichever format the application chooses
+    // Function accepting the message -- which includes the time, type, label, and output of `data`
+    // resolvers -- and returning a log entry in whichever format the application chooses.
     format: null,
 
     // Defines the amount of time in milliseconds the logger will spend processing events. Only
@@ -206,10 +206,8 @@ const buildResolver = (elementConfig) => {
     const {value, expression, matches, closest: closestSelector, selector} = elementConfig;
 
     // value is required if not a string
-    if (!value) {
-        // TODO: Warning
-        return null;
-    }
+    warning(value, 'Data resolvers must either be a string or object including a {value} member');
+    if (!value) return null;
 
     const nodeResolver = resolveNode(closestSelector, selector);
     const valueResolver = buildResolver(value);
@@ -273,17 +271,20 @@ const resolveData = (node) => {
 
 // Default message formatter
 const format = (node, ev) => {
-    if (node) {
-        return {
-            time: Date.now(),
-            type: ev.type,
-            label: resolveLabel(node),
-            ...resolveData(node),
-            ...(config.format && config.format(node, ev) || null)
-        };
+    if (!node) return null;
+
+    const message = {
+        time: Date.now(),
+        type: ev.type,
+        label: resolveLabel(node),
+        ...resolveData(node)
+    };
+
+    if (config.format) {
+        return config.format(message);
     }
 
-    return null;
+    return message;
 };
 
 const logJob = new Job(flushLogQueue);
