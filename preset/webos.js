@@ -3,10 +3,12 @@ import {info} from '@enact/webos/pmloglib';
 
 import {configure as conf, fetchConfig} from '../index';
 
+let messageId = 'NL_ENACT';
+
 const config = {
     enabled: false,
     log: (message) => {
-        info('NL_ENACT', message);
+        info(messageId, message);
     }
 };
 
@@ -31,8 +33,9 @@ const configure = (cfg) => {
         sync: true,
         parse: (body) => {
             const json = JSON.parse(body);
-            // if the file is found, treat it as enabled
-            json.enabled = true;
+            if (json.messageId) {
+                messageId = json.messageId;
+            }
 
             return json;
         }
