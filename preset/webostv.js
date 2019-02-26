@@ -1,8 +1,10 @@
 import {config as moonstone} from './moonstone';
+import {config as ilib} from './ilib';
 import {config as webos, configure as conf} from './webos';
 
 const config = {
     ...moonstone,
+    ...ilib,
     ...webos
 };
 
