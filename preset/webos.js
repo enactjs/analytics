@@ -24,8 +24,7 @@ const configure = (cfg) => {
         // retrieve a local config file so bail out
         if (!appId) return;
 
-        // TODO: Determine the default path on webOS
-        path = `/usr/var/${appId}.json`
+        path = `/mnt/lg/cmn_data/whitelist/dr/enact/${appId}.json`
     }
 
     fetchConfig(path, {
