@@ -3,10 +3,12 @@ import {info} from '@enact/webos/pmloglib';
 
 import {configure as conf, fetchConfig} from '../index';
 
+let messageId = 'NL_ENACT';
+
 const config = {
     enabled: false,
     log: (message) => {
-        info('@enact/analytics', message);
+        info(messageId, message);
     }
 };
 
@@ -24,16 +26,16 @@ const configure = (cfg) => {
         // retrieve a local config file so bail out
         if (!appId) return;
 
-        // TODO: Determine the default path on webOS
-        path = `/usr/var/${appId}.json`
+        path = `/mnt/lg/cmn_data/whitelist/dr/enact/${appId}.json`
     }
 
     fetchConfig(path, {
         sync: true,
         parse: (body) => {
             const json = JSON.parse(body);
-            // if the file is found, treat it as enabled
-            json.enabled = true;
+            if (json.messageId) {
+                messageId = json.messageId;
+            }
 
             return json;
         }
