@@ -126,7 +126,7 @@ const closest = (target) => config.selector && target ? target.closest(config.se
 
 // convert an array of strings to a single regex
 const buildRuleset = ruleset => Object.keys(ruleset).reduce((result, key) => {
-    result[key] = new RegExp(`(${coerceArray(ruleset[key]).map(sanitize).join('|')})`);
+    result[key] = new RegExp(`(${coerceArray(ruleset[key]).map(sanitize).join('|')})`, 'i');
     return result;
 }, {});
 
