@@ -8,7 +8,7 @@ let messageId = 'NL_ENACT';
 const config = {
     enabled: false,
     log: (message) => {
-        info(messageId, message);
+        info(messageId, message, '');
     }
 };
 
