@@ -6,7 +6,7 @@ import {config as webos, configure as conf} from './webos';
 
 const adapter = (keyName) => keyName ? {keyName} : null;
 
-const keys = ['red', 'blue', 'green', 'yellow', 'left', 'right', 'up', 'down'];
+const keys = ['red', 'blue', 'green', 'yellow', 'cancel'];
 
 const config = {
     ...moonstone,
