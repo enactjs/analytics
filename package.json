@@ -18,6 +18,10 @@
   "homepage": "https://github.com/enactjs/analytics#readme",
   "dependencies": {
     "@enact/core": "^2.3.0",
-    "@enact/webos": "^2.3.0"
+    "@enact/webos": "^2.3.0",
+    "xhr": "^2.5.0"
+  },
+  "devDependencies": {
+    "react": "^16.8.1"
   }
 }
