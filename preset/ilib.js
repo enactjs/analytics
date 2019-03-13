@@ -42,8 +42,14 @@ const config = {
 
 const configure = (cfg) => {
     conf({
-        ...config,
-        ...cfg
+        ...cfg,
+        format: (msg) => {
+            if (cfg && cfg.format) {
+                msg = cfg.format(msg);
+            }
+
+            return config.format(msg);
+        }
     });
 };
 
