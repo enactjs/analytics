@@ -11,9 +11,12 @@ const memoMapper = memoize((/* locale */) => {
 
     // We have to convert the case since the text may be converted by UI components to a
     // different case during render.
-    const keys = Object.keys(map).map(s => s.toUpperCase());
+    const reversed = Object.keys(map).reduce((acc, key) => {
+        acc[map[key].toUpperCase()] = key;
+        return acc;
+    }, {});
 
-    return (value) => keys[keys.indexOf(value.toUpperCase())];
+    return (value) => reversed[value.toUpperCase()];
 });
 
 const getMapper = () => memoMapper(ilib.getLocale());
