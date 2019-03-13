@@ -142,6 +142,10 @@ const resolveAttribute = (name) => (node) => {
         return node.textContent;
     }
 
+    if (name === '<value>') {
+        return node.type === 'password' ? null : node.value;
+    }
+
     return node.getAttribute(name);
 };
 
