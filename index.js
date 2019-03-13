@@ -1,7 +1,7 @@
 /* global XMLHttpRequest */
 
 import {on} from '@enact/core/dispatcher';
-import {handle, forKey, forEventProp} from '@enact/core/handle';
+import {adaptEvent, handle, forKey, forEventProp} from '@enact/core/handle';
 import {onWindowReady} from '@enact/core/snapshot';
 import {coerceArray, Job} from '@enact/core/util';
 import xhr from 'xhr';
@@ -121,8 +121,16 @@ const flushLogQueue = (all) => {
     }
 };
 
+const isGlobal = target => target === document || target === document.body;
+
 // Resolves the closest ancestor of a node that matches `selector`
-const closest = (target) => config.selector && target ? target.closest(config.selector) : target;
+const closest = (target) => {
+    if (isGlobal(target) || !config.selector || !target) {
+        return target;
+    }
+
+    return target.closest(config.selector);
+}
 
 // convert an array of strings to a single regex
 const buildRuleset = ruleset => Object.keys(ruleset).reduce((result, key) => {
@@ -270,14 +278,14 @@ const resolveData = (node) => {
 };
 
 // Default message formatter
-const format = (node, ev) => {
-    if (!node) return null;
+const format = ({target, ...rest}) => {
+    if (!target) return null;
 
     const message = {
         time: Date.now(),
-        type: ev.type,
-        label: resolveLabel(node),
-        ...resolveData(node)
+        label: isGlobal(target) ? 'global' : resolveLabel(target),
+        ...rest,
+        ...resolveData(target)
     };
 
     if (config.format) {
@@ -308,18 +316,35 @@ const logEntry = (msg) => {
 };
 
 // Accepts an event to consider for logging
-const log = (ev) => logEntry(format(closest(ev.target), ev));
+const log = (ev) => logEntry(format({
+    ...ev,
+    target: closest(ev.target)
+}));
+
+const defaultAdapter = (ev) => ({target: ev.target, type: ev.type});
+
+const withDefaultAdapter = (adapter) => {
+    if (!adapter) return defaultAdapter;
+
+    return (ev) => ({
+        ...adapter(ev),
+        ...defaultAdapter(ev)
+    });
+}
 
 // Registers an event listener using the capture phase. `listener` is optional to filter the event
 // before the log processing chain.
-const addListener = (event, listener) => {
+const addListener = ({type, filter: listener, adapter}) => {
     const handler = handle(
         isEnabled,
         listener,
-        log
+        adaptEvent(
+            withDefaultAdapter(adapter),
+            log
+        )
     );
 
-    document.addEventListener(event, handler, {capture: true});
+    document.addEventListener(type, handler, {capture: true});
 
     return handler;
 };
@@ -355,9 +380,9 @@ const configure = (cfg = {}) => {
 
     onWindowReady(() => {
         if (Array.isArray(cfg.listeners)) {
-            cfg.listeners.forEach(key => addListener(key));
+            cfg.listeners.forEach(type => addListener({type}));
         } else if (typeof cfg.listeners === 'object') {
-            Object.keys(cfg.listeners).forEach(key => addListener(key, cfg.listeners[key]));
+            Object.keys(cfg.listeners).forEach(type => addListener({...cfg.listeners[type], type}));
         }
     });
 };
@@ -400,8 +425,16 @@ const fetchConfig = (url, options = {}) => {
 // Event handlers
 
 onWindowReady(() => {
-    addListener('keydown', forKey('enter'));
-    addListener('click', isLeftClick);
+    addListener({
+        type: 'keydown',
+        filter: forKey('enter')
+    });
+
+    addListener({
+        type: 'click',
+        filter: isLeftClick
+    });
+
     on('beforeunload', () => flushLogQueue(true), document);
 });
 
