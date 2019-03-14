@@ -5,6 +5,16 @@ const keyMap = {
 	space: {which: 32, code: 'Space'}
 };
 
+const testApp = (
+	<div data-parent-target aris-label="Top ancestor target">
+		<div data-parent-target aria-label="Nearest ancestor target">
+			<button id="test-target">Click Me</button>
+			<button id="data-button" data-metric-label="Data metric label" aria-label="Aria label">Click Me</button>
+			<button id="aria-button" aria-label="Aria label">Click Me</button>
+		</div>
+	</div>
+);
+
 function initContainer() {
 	const container = document.createElement('div');
 	container.id = 'root';
@@ -23,7 +33,7 @@ function leftClick(node, ) {
 }
 
 function keydown(node, key = 'enter') {
-	const {which, code} = (keyMap[key] || keyMap.enter);
+	const {which, code} = keyMap[key];
 	const evt = new KeyboardEvent('keydown', {
 		bubbles: true,
 		keyCode: which,
@@ -32,19 +42,8 @@ function keydown(node, key = 'enter') {
 		key: code,
 		code
 	});
-	node.focus();
+	if(node.focus) node.focus();
 	node.dispatchEvent(evt)
-}
-
-function testApp() {
-	return {
-		selector: '#test-target',
-		app: (
-			<div>
-				<button id="test-target">Click Me</button>
-			</div>
-		)
-	};
 }
 
 export {
