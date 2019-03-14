@@ -4,6 +4,7 @@ describe('configure data', () => {
 		test.todo('base case of a `<text>` pseudo-selector');
 		test.todo('base case of a simple attribute selector');
 		test.todo('advanced case of a recursive-layered value');
+		test.todo('advanced case of a recursive-layered value with array value');
 		test.todo('advanced case of a recursive-layered value with additionally settings from sections below');
 	});
 
