@@ -23,6 +23,7 @@
     "@enact/core": "^2.3.0",
     "@enact/i18n": "^2.3.0",
     "@enact/webos": "^2.3.0",
+    "warning": "^4.0.3",
     "xhr": "^2.5.0"
   },
   "devDependencies": {
