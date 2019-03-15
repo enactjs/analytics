@@ -4,7 +4,7 @@
   "description": "Generalized application interaction analytics library",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "enact test"
   },
   "repository": {
     "type": "git",
@@ -16,8 +16,17 @@
     "url": "https://github.com/enactjs/analytics/issues"
   },
   "homepage": "https://github.com/enactjs/analytics#readme",
+  "eslintConfig": {
+    "extends": "enact/strict"
+  },
   "dependencies": {
     "@enact/core": "^2.3.0",
-    "@enact/webos": "^2.3.0"
+    "@enact/i18n": "^2.3.0",
+    "@enact/webos": "^2.3.0",
+    "warning": "^4.0.3",
+    "xhr": "^2.5.0"
+  },
+  "devDependencies": {
+    "react": "^16.8.1"
   }
 }
