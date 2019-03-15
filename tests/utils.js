@@ -1,28 +1,50 @@
+import {coerceArray} from '@enact/core/util';
+import {mount} from 'enzyme';
 import React from 'react';
 
+const defaultTarget = '#test-target';
+const defaultConfig = {enabled: true, selector: 'button', idle: false};
+const container = document.body.appendChild(document.createElement('div'));
+
+// Keymap for keydown usage
 const keyMap = {
 	enter: {which: 13, code: 'Enter'},
-	space: {which: 32, code: 'Space'}
+	space: {which: 32, code: 'Space'},
+	escape: {which: 27, code: 'Escape'}
 };
 
-const testApp = (
-	<div data-parent-target aris-label="Top ancestor target">
-		<div data-parent-target aria-label="Nearest ancestor target">
-			<button id="test-target">Click Me</button>
+// Basic app with a balanced layout that is useful for a variety of situations
+const basicApp = (
+	<article data-parent-target aria-label="Top ancestor target">
+		<header>
+			<h1>Header Text</h1>
+		</header>
+		<section data-parent-target aria-label="Nearest ancestor target" data-section-index="0">
+			<button id="test-target" alt="First Button">
+				Click Me
+				<img role="icon" src="https://via.placeholder.com/50"/>
+				<img role="avatar" src="https://via.placeholder.com/150"/>
+			</button>
 			<button id="data-button" data-metric-label="Data metric label" aria-label="Aria label">Click Me</button>
 			<button id="aria-button" aria-label="Aria label">Click Me</button>
-		</div>
-	</div>
+		</section>
+	</article>
 );
 
-function initContainer() {
-	const container = document.createElement('div');
-	container.id = 'root';
-	document.body.appendChild(container);
-	return container;
+// Configures analytics, mounts a test app, triggers events, and then returns the mocked log function object
+function mountTriggerEvent({target = defaultTarget, events = leftClick, app = basicApp, ...config} = {}) {
+	const {configure} = require('..');
+	const log = jest.fn();
+	configure(Object.assign({log}, defaultConfig, config));
+	const wrapper = mount(app, {attachTo: container});
+	const targetNode = typeof target === 'string' ? wrapper.find(target).getDOMNode() : target;
+	coerceArray(events).forEach(evt => evt(targetNode))
+	wrapper.detach();
+	return log;
 }
 
-function leftClick(node, ) {
+// Emulates a left-click event on a node
+function leftClick(node) {
 	const evt = new MouseEvent('click', {
 		bubbles: true,
 		button: 0,
@@ -32,6 +54,7 @@ function leftClick(node, ) {
 	node.dispatchEvent(evt)
 }
 
+// Emulates a keydown event on a node
 function keydown(node, key = 'enter') {
 	const {which, code} = keyMap[key];
 	const evt = new KeyboardEvent('keydown', {
@@ -47,8 +70,7 @@ function keydown(node, key = 'enter') {
 }
 
 export {
-	initContainer,
 	leftClick,
 	keydown,
-	testApp
+	mountTriggerEvent
 };

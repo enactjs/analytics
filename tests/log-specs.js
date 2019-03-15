@@ -1,4 +1,10 @@
+import {log as logger, configure} from '..';
 
 describe('log', () => {
-	test.todo('validate `log` can be used to imperatively pass log extries into the analytics system')
+	test('imperatively pass log extries into the analytics system', () => {
+		const log = jest.fn();
+		configure({enabled:true, log, idle: false});
+		logger({customData: true, target: document});
+		expect(log.mock.calls[0][0].customData).toBeTruthy();
+	});
 });
