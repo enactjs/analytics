@@ -19,6 +19,16 @@ describe('configure data', () => {
 			const log = mountTriggerEvent({data});
 			expect(log.mock.calls[0][0].altLabel).toBe('First Button');
 		});
+		test('base case of a simple value selector with nothing else', () => {
+			// Special edge case of no selector nor closest in object format
+			const data = {
+				altLabel: {
+					value: 'alt'
+				}
+			};
+			const log = mountTriggerEvent({data});
+			expect(log.mock.calls[0][0].altLabel).toBe('First Button');
+		});
 		test('advanced case of a object <text> value', () => {
 			const data = {
 				sectionTitle: {
@@ -141,7 +151,7 @@ describe('configure data', () => {
 				avatarHost: {
 					selector: 'img[role=avatar]',
 					value: 'src',
-					expression: 'https:\/\/(.*)\/.*'
+					expression: 'https://(.*)/.*'
 				}
 			};
 			const log = mountTriggerEvent({data});
@@ -152,7 +162,7 @@ describe('configure data', () => {
 				avatarHost: {
 					selector: 'img[role=avatar]',
 					value: 'src',
-					expression: 'ftp:\/\/(.*)\/.*'
+					expression: 'ftp://(.*)/.*'
 				}
 			};
 			const log = mountTriggerEvent({data});

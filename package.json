@@ -16,8 +16,12 @@
     "url": "https://github.com/enactjs/analytics/issues"
   },
   "homepage": "https://github.com/enactjs/analytics#readme",
+  "eslintConfig": {
+    "extends": "enact/strict"
+  },
   "dependencies": {
     "@enact/core": "^2.3.0",
+    "@enact/i18n": "^2.3.0",
     "@enact/webos": "^2.3.0",
     "xhr": "^2.5.0"
   },

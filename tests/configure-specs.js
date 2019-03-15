@@ -6,6 +6,7 @@ describe('configure', () => {
 	beforeEach(() => jest.resetModules());
 
 	describe('#enabled', () => {
+
 		test('should log clicks on desired selector when true', () => {
 			const log = mountTriggerEvent();
 			expect(log.mock.calls.length).toBe(1);
@@ -156,7 +157,7 @@ describe('configure', () => {
 		});
 		test('time property in message is parsable in Date', () => {
 			const log = mountTriggerEvent();
-			new Date(log.mock.calls[0][0].time);
+			expect(() => new Date(log.mock.calls[0][0].time)).not.toThrow();
 		});
 		test('type property corresponds to the event type', () => {
 			const log = mountTriggerEvent();
@@ -187,8 +188,8 @@ describe('configure', () => {
 	});
 
 	describe('#listeners', () => {
-		const auxclick = node => node.dispatchEvent(new MouseEvent('auxclick'));
-		const myevent = node => node.dispatchEvent(new CustomEvent('myevent'));
+		const auxclick = node => node.dispatchEvent(new window.MouseEvent('auxclick'));
+		const myevent = node => node.dispatchEvent(new window.CustomEvent('myevent'));
 		const escapeKey = node => keydown(node, 'escape');
 		const spaceKey = node => keydown(node, 'space');
 
@@ -238,7 +239,7 @@ describe('configure', () => {
 			const log = jest.fn(() => {
 				// make each log take 10ms so we trip the frameSize limit after roughly 5 entries
 				const endBy = Date.now() + 10;
-				while(Date.now() < endBy);
+				while (Date.now() < endBy);
 			});
 			mountTriggerEvent({log, idle: true, frameSize: 50, events});
 			const after = new Job(() => {

@@ -1,18 +1,18 @@
 import {configure as conf} from '../index';
 
 const config = {
-    "selector": ".spottable"
+	'selector': '.spottable'
 };
 
 const configure = (cfg) => {
-    conf({
-        ...config,
-        ...cfg
-    });
+	conf({
+		...config,
+		...cfg
+	});
 };
 
 export default configure;
 export {
-    config,
-    configure
+	config,
+	configure
 };

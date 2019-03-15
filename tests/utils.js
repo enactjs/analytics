@@ -22,8 +22,8 @@ const basicApp = (
 		<section data-parent-target aria-label="Nearest ancestor target" data-section-index="0">
 			<button id="test-target" alt="First Button">
 				Click Me
-				<img role="icon" src="https://via.placeholder.com/50"/>
-				<img role="avatar" src="https://via.placeholder.com/150"/>
+				<img role="icon" src="https://via.placeholder.com/50" />
+				<img role="avatar" src="https://via.placeholder.com/150" />
 			</button>
 			<button id="data-button" data-metric-label="Data metric label" aria-label="Aria label">Click Me</button>
 			<button id="aria-button" aria-label="Aria label">Click Me</button>
@@ -32,32 +32,32 @@ const basicApp = (
 );
 
 // Configures analytics, mounts a test app, triggers events, and then returns the mocked log function object
-function mountTriggerEvent({target = defaultTarget, events = leftClick, app = basicApp, ...config} = {}) {
+function mountTriggerEvent ({target = defaultTarget, events = leftClick, app = basicApp, ...config} = {}) {
 	const {configure} = require('..');
 	const log = jest.fn();
 	configure(Object.assign({log}, defaultConfig, config));
 	const wrapper = mount(app, {attachTo: container});
 	const targetNode = typeof target === 'string' ? wrapper.find(target).getDOMNode() : target;
-	coerceArray(events).forEach(evt => evt(targetNode))
+	coerceArray(events).forEach(evt => evt(targetNode));
 	wrapper.detach();
 	return log;
 }
 
 // Emulates a left-click event on a node
-function leftClick(node) {
-	const evt = new MouseEvent('click', {
+function leftClick (node) {
+	const evt = new window.MouseEvent('click', {
 		bubbles: true,
 		button: 0,
 		buttons: 1,
 		which: 1
 	});
-	node.dispatchEvent(evt)
+	node.dispatchEvent(evt);
 }
 
 // Emulates a keydown event on a node
-function keydown(node, key = 'enter') {
+function keydown (node, key = 'enter') {
 	const {which, code} = keyMap[key];
-	const evt = new KeyboardEvent('keydown', {
+	const evt = new window.KeyboardEvent('keydown', {
 		bubbles: true,
 		keyCode: which,
 		which,
@@ -65,8 +65,8 @@ function keydown(node, key = 'enter') {
 		key: code,
 		code
 	});
-	if(node.focus) node.focus();
-	node.dispatchEvent(evt)
+	if (node.focus) node.focus();
+	node.dispatchEvent(evt);
 }
 
 export {
