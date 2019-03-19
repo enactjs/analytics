@@ -151,6 +151,10 @@ const resolveAttribute = (name) => (node) => {
 		return node.textContent;
 	}
 
+	if (name === '<value>') {
+		return node.type === 'password' ? null : node.value;
+	}
+
 	return node.getAttribute(name);
 };
 
@@ -249,7 +253,7 @@ const buildDataResolver = (data) => {
 const filter = (msg) => {
 	if (
 		(config.exclude && matchesRules(config.exclude, msg)) ||
-        (config.include && !matchesRules(config.include, msg))
+		(config.include && !matchesRules(config.include, msg))
 	) {
 		return false;
 	}

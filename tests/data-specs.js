@@ -29,6 +29,27 @@ describe('configure data', () => {
 			const log = mountTriggerEvent({data});
 			expect(log.mock.calls[0][0].altLabel).toBe('First Button');
 		});
+		test('base case of a simple <value> pseudo-attribute', () => {
+			const data = {
+				innerText: '<value>'
+			};
+			const log = mountTriggerEvent({data, target: '#data-input-text'});
+			expect(log.mock.calls[0][0].innerText).toBe('plain text value');
+		});
+		test('base case of a simple <value> pseudo-attribute on <select>', () => {
+			const data = {
+				innerText: '<value>'
+			};
+			const log = mountTriggerEvent({data, target: '#data-input-select'});
+			expect(log.mock.calls[0][0].innerText).toBe('selected option');
+		});
+		test('base case of a simple <value> pseudo-attribute on password field', () => {
+			const data = {
+				innerText: '<value>'
+			};
+			const log = mountTriggerEvent({data, target: '#data-input-password'});
+			expect(log.mock.calls[0][0].innerText).not.toBeDefined();
+		});
 		test('advanced case of a object <text> value', () => {
 			const data = {
 				sectionTitle: {

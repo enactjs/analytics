@@ -3,7 +3,7 @@ import {mount} from 'enzyme';
 import React from 'react';
 
 const defaultTarget = '#test-target';
-const defaultConfig = {enabled: true, selector: 'button', idle: false};
+const defaultConfig = {enabled: true, selector: '[id]', idle: false};
 const container = document.body.appendChild(document.createElement('div'));
 
 // Keymap for keydown usage
@@ -27,6 +27,12 @@ const basicApp = (
 			</button>
 			<button id="data-button" data-metric-label="Data metric label" aria-label="Aria label">Click Me</button>
 			<button id="aria-button" aria-label="Aria label">Click Me</button>
+			<input id="data-input-text" type="text" defaultValue="plain text value" />
+			<input id="data-input-password" type="password" defaultValue="p@ssw0rd" />
+			<select id="data-input-select" defaultValue="selected option">
+				<option value="selected option">Selected Option</option>
+				<option value="unselected option">Unselected Option</option>
+			</select>
 		</section>
 	</article>
 );
