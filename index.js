@@ -1,5 +1,14 @@
 /* global XMLHttpRequest */
 
+/**
+ * Provides methods to add and remove global event listeners
+ *
+ * @module analytics/dispatcher
+ * @exports off
+ * @exports on
+ * @exports once
+ */
+
 import {on} from '@enact/core/dispatcher';
 import {adaptEvent, handle, forKey, forEventProp} from '@enact/core/handle';
 import {onWindowReady} from '@enact/core/snapshot';
@@ -9,93 +18,110 @@ import warning from 'warning';
 
 // Module state
 
-// When `idle`, accumulates the log events to be processed during the next idle frame or on unload
+/** When `idle`, accumulates the log events to be processed during the next idle frame or on unload
+ */
+
+/*
+ * When `idle`, accumulates the log events to be processed during the next idle frame or on unload
+ *
+ */
 const logQueue = [];
 
 const config = {
-    // An object mapping a DSL for metadata resolution to metadata keys.
-    //
-    // Resolution DSL:
-    //
-    //     CssSelector = String
-    //     AttributeName = String
-    //     RegularExpressionString = String
-    //     TextContentSelector = '<text>'
-    //
-    //     AttributeSelector = AttributeName | TextContentSelector
-    //     ClosestSelector = CssSelector
-    //     Selector = CssSelector
-    //     Matches = CssSelector
-    //     Expression = RegularExpressionString
-    //
-    //     Resolver = AttributeSelector | {
-    //         matches?: Matches,
-    //         closest?: ClosestSelector | selector?: Selector,
-    //         value: Resolver | Resolver[],
-    //         expression?: Expression
-    //     }
-    //
-    // ```
-    // data: {
-    //     panel: {
-    //         closest: "article[role='region']",
-    //         value: {
-    //             selector: "header h1",
-    //             value: "<text>"
-    //         }
-    //     },
-    //     icon: {
-    //         matches: "[role='button']",
-    //         selector: "[class *= 'Icon_icon']",
-    //         value: [
-    //             '<text>',
-    //             {
-    //                 value: "style",
-    //                 expression: "url\(.*\/(.*)\)"
-    //             }
-    //         ]
-    //     }
-    // }
-    // ```
+    /** An object mapping a DSL for metadata resolution to metadata keys.
+     *
+     * Resolution DSL:
+     *
+     *     CssSelector = String
+     *     AttributeName = String
+     *     RegularExpressionString = String
+     *     TextContentSelector = '<text>'
+     *
+     *     AttributeSelector = AttributeName | TextContentSelector
+     *     ClosestSelector = CssSelector
+     *     Selector = CssSelector
+     *     Matches = CssSelector
+     *     Expression = RegularExpressionString
+     *
+     *     Resolver = AttributeSelector | {
+     *         matches?: Matches,
+     *         closest?: ClosestSelector | selector?: Selector,
+     *         value: Resolver | Resolver[],
+     *         expression?: Expression
+     *     }
+     *
+     * ```
+     * data: {
+     *     panel: {
+     *         closest: "article[role='region']",
+     *         value: {
+     *             selector: "header h1",
+     *             value: "<text>"
+     *         }
+     *     },
+     *     icon: {
+     *         matches: "[role='button']",
+     *         selector: "[class *= 'Icon_icon']",
+     *         value: [
+     *             '<text>',
+     *             {
+     *                 value: "style",
+     *                 expression: "url\(.*\/(.*)\)"
+     *             }
+     *         ]
+     *     }
+     * }
+     * ```
+     */
     data: null,
 
-    // Enables metric logging
+    /** Enables metric logging
+     */
     enabled: false,
 
-    // An object of filter rules that remove entries from the log. When null, no events are excluded
-    // by the filter.
+    /** An object of filter rules that remove entries from the log. When null, no events are excluded
+     * by the filter.
+     */
     exclude: null,
 
-    // Optional custom filter function to remove entries from the log
+    /** Optional custom filter function to remove entries from the log
+     */
     filter: null,
 
-    // Function accepting the message -- which includes the time, type, label, and output of `data`
-    // resolvers -- and returning a log entry in whichever format the application chooses.
+    /** Function accepting the message -- which includes the time, type, label, and output of `data`
+     * resolvers -- and returning a log entry in whichever format the application chooses.
+     */
     format: null,
 
-    // Defines the amount of time in milliseconds the logger will spend processing events. Only
-    // effective when `idle` is true
+    /** Defines the amount of time in milliseconds the logger will spend processing events. Only
+     * effective when `idle` is true
+     */
     frameSize: 100,
 
-    // Process events asynchronous when the system is idle
+    /** Process events asynchronous when the system is idle
+     */
     idle: true,
 
-    // An object of filter rules that must be met to be included. When null, any event not excluded
-    // by `exclude` will be logged.
+    /** An object of filter rules that must be met to be included. When null, any event not excluded
+     * by `exclude` will be logged.
+     */
     include: null,
 
-    // Array of events or object mapping events to filter functions
-    // listeners: ['focus', 'load']
-    // listeners: {
-    //     focus: (ev) => ev.nodeName === 'button' // only report on focus events for buttons
-    // }
+    /** Array of events or object mapping events to filter functions
+     * listeners: ['focus', 'load']
+     * listeners: {
+     *     focus: (ev) => ev.nodeName === 'button'  * only report on focus events for buttons
+     * }
+     */
     listeners: null,
 
-    // Required application-defined function to log the events
+    /** Required application-defined function to log the events
+     */
     log: null,
 
-    // A CSS selector which finds the closest ancestor from the target of an event to consider as
-    // the source for the purposes of logging
+    /** A CSS selector which finds the closest ancestor from the target of an event to consider as
+     * the source for the purposes of logging
+     */
     selector: '[data-metric-label]'
 };
 
@@ -105,12 +131,15 @@ const isLeftClick = forEventProp('which', 1);
 
 const isEnabled = () => config.enabled === true;
 
-// Source: https://stackoverflow.com/questions/6300183/sanitize-string-of-regex-characters-before-regexp-build
+// Source: https: *stackoverflow.com/questions/6300183/sanitize-string-of-regex-characters-before-regexp-build
 const sanitize = (str) => str.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&');
 
 // Logging
 
-// Logs messages currently in the queue. Logging is limited to the `frameSize` unless `all` is true
+/** Logs messages currently in the queue. Logging is limited to the `frameSize` unless `all` is true
+ *
+ * @param all
+ */
 const flushLogQueue = (all) => {
     if (config.log) {
         const endBy = all ? 0 : Date.now() + config.frameSize;
@@ -123,7 +152,8 @@ const flushLogQueue = (all) => {
 
 const isGlobal = target => target === document || target === document.body;
 
-// Resolves the closest ancestor of a node that matches `selector`
+/** Resolves the closest ancestor of a node that matches `selector`
+ */
 const closest = (target) => {
     if (isGlobal(target) || !config.selector || !target) {
         return target;
@@ -132,13 +162,15 @@ const closest = (target) => {
     return target.closest(config.selector);
 }
 
-// convert an array of strings to a single regex
+/** convert an array of strings to a single regex
+ */
 const buildRuleset = ruleset => Object.keys(ruleset).reduce((result, key) => {
     result[key] = new RegExp(`(${coerceArray(ruleset[key]).map(sanitize).join('|')})`, 'i');
     return result;
 }, {});
 
-// Determines if the message matches a set of rules
+/** Determines if the message matches a set of rules
+ */
 const matchesRules = (ruleset, msg) => Object.keys(ruleset).some(key => {
     return !!msg[key] && ruleset[key].test(msg[key]);
 });
@@ -153,9 +185,10 @@ const resolveAttribute = (name) => (node) => {
     return node.getAttribute(name);
 };
 
-// Returns a function that accepts a value and uses the provided expression to match against that
-// value. If the expression includes a capture group, the first capture group is returned. If not,
-// the matched expression is returned.
+/** Returns a function that accepts a value and uses the provided expression to match against that
+ * value. If the expression includes a capture group, the first capture group is returned. If not,
+ * the matched expression is returned.
+ */
 const resolveExpression = (expression) => {
     if (expression) {
         try {
@@ -184,8 +217,9 @@ const resolveExpression = (expression) => {
     return v => v;
 }
 
-// Resolves the target node to either the nearest ancestor or descendant based on the provided
-// selectors. Only one selector is supported per resolver but may be omitted.
+/** Resolves the target node to either the nearest ancestor or descendant based on the provided
+ * selectors. Only one selector is supported per resolver but may be omitted.
+ */
 const resolveNode = (closestSelector, selector) => (node) => {
     if (!node) return null;
     if (closestSelector) {
@@ -197,8 +231,9 @@ const resolveNode = (closestSelector, selector) => (node) => {
     return node;
 }
 
-// Returns a resolver function from either an attribute string or resolver object (or an array of
-// either)
+/** Returns a resolver function from either an attribute string or resolver object (or an array of
+ * either)
+ */
 const buildResolver = (elementConfig) => {
     if (!elementConfig) return null;
 
@@ -228,7 +263,8 @@ const buildResolver = (elementConfig) => {
     };
 }
 
-// Builds a resolver function for each key in `data` with a valid configuration
+/** Builds a resolver function for each key in `data` with a valid configuration
+ */
 const buildDataResolver = (data) => {
     if (!data) return null;
 
@@ -243,8 +279,9 @@ const buildDataResolver = (data) => {
     return result;
 };
 
-// Filters the message based on the `include` and `exclude` rules as well as the optional custom
-// filter function.
+/** Filters the message based on the `include` and `exclude` rules as well as the optional custom
+ * filter function.
+ */
 const filter = (msg) => {
     if (
         (config.exclude && matchesRules(config.exclude, msg)) ||
@@ -256,7 +293,8 @@ const filter = (msg) => {
     return config.filter ? config.filter(msg) : true;
 };
 
-// Resolves the label for the message
+/** Resolves the label for the message
+ */
 const resolveLabel = buildResolver([
     'data-metric-label',
     'aria-label',
@@ -277,7 +315,8 @@ const resolveData = (node) => {
     return result;
 };
 
-// Default message formatter
+/** Default message formatter
+ */
 const format = ({target, ...rest}) => {
     if (!target) return null;
 
@@ -297,7 +336,8 @@ const format = ({target, ...rest}) => {
 
 const logJob = new Job(flushLogQueue);
 
-// Pushes an entry onto the queue and schedules it to run on the next idle frame
+/** Pushes an entry onto the queue and schedules it to run on the next idle frame
+ */
 const idle = (msg) => {
     logQueue.push(msg);
     if (logQueue.length === 1) {
@@ -305,7 +345,8 @@ const idle = (msg) => {
     }
 };
 
-// Logs the formatted message
+/** Logs the formatted message
+ */
 const logEntry = (msg) => {
     if (!msg || !filter(msg)) return;
     if (config.idle) {
@@ -315,7 +356,8 @@ const logEntry = (msg) => {
     }
 };
 
-// Accepts an event to consider for logging
+/** Accepts an event to consider for logging
+ */
 const log = (ev) => logEntry(format({
     ...ev,
     target: closest(ev.target)
@@ -332,8 +374,9 @@ const withDefaultAdapter = (adapter) => {
     });
 }
 
-// Registers an event listener using the capture phase. `listener` is optional to filter the event
-// before the log processing chain.
+/** Registers an event listener using the capture phase. `listener` is optional to filter the event
+ * before the log processing chain.
+ */
 const addListener = ({type, filter: listener, adapter}) => {
     const handler = handle(
         isEnabled,
@@ -349,7 +392,8 @@ const addListener = ({type, filter: listener, adapter}) => {
     return handler;
 };
 
-// Disables logging
+/** Disables logging
+ */
 const disable = () => {
     config.enabled = false;
     if (logQueue.length > 0) {
@@ -357,12 +401,14 @@ const disable = () => {
     }
 };
 
-// Enables Logging
+/** Enables Logging
+ */
 const enable = () => {
     config.enabled = true;
 };
 
-// Configures the logging behavior
+/** Configures the logging behavior
+ */
 const configure = (cfg = {}) => {
     if (typeof cfg.exclude === 'object')   config.exclude = buildRuleset(cfg.exclude);
     if (typeof cfg.filter === 'function')  config.filter = cfg.filter;
@@ -387,9 +433,10 @@ const configure = (cfg = {}) => {
     });
 };
 
-// Retrieves a JSON-formatted config using XHR. The `options` for `xhr` are supported as well as a
-// `parse` callback that will receive the raw HTTP response body and which must return a valid
-// config object.
+/** Retrieves a JSON-formatted config using XHR. The `options` for `xhr` are supported as well as a
+ * `parse` callback that will receive the raw HTTP response body and which must return a valid
+ * config object.
+ */
 const fetchConfig = (url, options = {}) => {
     if (typeof XMLHttpRequest !== 'undefined') {
         xhr.XMLHttpRequest = XMLHttpRequest || xhr.XMLHttpRequest;
@@ -397,7 +444,7 @@ const fetchConfig = (url, options = {}) => {
         const {parse, ...rest} = options;
         xhr({...rest, url, beforeSend: (r) => (req = r)}, (err, resp, body) => {
             let error = err || resp.statusCode !== 200 && resp.statusCode;
-            // false failure from chrome and file:// urls
+            // false failure from chrome and file: * urls
             if (error && req.status === 0 && req.response.length > 0) {
                 body = req.response;
                 error = false;
