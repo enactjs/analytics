@@ -25,7 +25,7 @@ const config = {
 	format: (msg) => {
 		const findValue = getMapper();
 
-		// For every key (except type and time), attempt to delocalize the string.
+		// For every string value (except type), attempt to delocalize the string.
 		Object.keys(msg)
 			.filter(key => key !== 'type' && typeof msg[key] === 'string')
 			.forEach(msgKey => {

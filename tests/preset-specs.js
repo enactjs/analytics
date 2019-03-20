@@ -50,6 +50,21 @@ describe('preset', () => {
 			expect(msg.otherData).toBe('something else');
 			expect(msg.label).toBe('stringName');
 		});
+
+		test('calls provided format function before intrinsic format function', () => {
+			// remaps message fields to validate it was called
+			const customFormat = jest.fn(message => ({
+				content: message.label
+			}));
+			ilib.configure({
+				format: customFormat
+			});
+
+			const format = configure.mock.calls[0][0].format;
+			const msg = format({label: 'localized text'});
+
+			expect(msg.content).toBe('stringName');
+		});
 	});
 
 	describe('#webos', () => {
