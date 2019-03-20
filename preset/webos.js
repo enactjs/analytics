@@ -1,3 +1,4 @@
+import {onWindowReady} from '@enact/core/snapshot';
 import {fetchAppId} from '@enact/webos/application';
 import {info} from '@enact/webos/pmloglib';
 
@@ -12,13 +13,7 @@ const config = {
 	}
 };
 
-const configure = (cfg = {}) => {
-	conf({
-		...config,
-		...cfg
-	});
-
-	let {path} = cfg;
+const fetchAppConfig = path => {
 	if (!path) {
 		const appId = fetchAppId();
 
@@ -42,8 +37,18 @@ const configure = (cfg = {}) => {
 	});
 };
 
+const configure = (cfg = {}) => {
+	conf({
+		...config,
+		...cfg
+	});
+
+	onWindowReady(() => fetchAppConfig(cfg.path));
+};
+
 export default configure;
 export {
 	config,
-	configure
+	configure,
+	fetchAppConfig
 };
