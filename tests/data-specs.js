@@ -50,6 +50,16 @@ describe('configure data', () => {
 			const log = mountTriggerEvent({data, target: '#data-input-password'});
 			expect(log.mock.calls[0][0].innerText).not.toBeDefined();
 		});
+		test('base case of <count> pseudo-attribute', () => {
+			const data = {
+				count: {
+					selector: 'li',
+					value: '<count>'
+				}
+			};
+			const log = mountTriggerEvent({data, target: '#data-list'});
+			expect(log.mock.calls[0][0].count).toBe(5);
+		});
 		test('advanced case of a object <text> value', () => {
 			const data = {
 				sectionTitle: {

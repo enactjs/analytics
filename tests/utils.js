@@ -33,6 +33,13 @@ const basicApp = (
 				<option value="selected option">Selected Option</option>
 				<option value="unselected option">Unselected Option</option>
 			</select>
+			<ul id="data-list">
+				<li>Item</li>
+				<li>Item</li>
+				<li>Item</li>
+				<li>Item</li>
+				<li>Item</li>
+			</ul>
 		</section>
 	</article>
 );

@@ -144,18 +144,28 @@ const matchesRules = (ruleset, msg) => Object.keys(ruleset).some(key => {
 	return !!msg[key] && ruleset[key].test(msg[key]);
 });
 
+const getFirstNode = (nodeOrList) => {
+	return nodeOrList instanceof global.HTMLElement ? nodeOrList : nodeOrList[0];
+};
+
 const resolveAttribute = (name) => (node) => {
-	if (!node) return null;
+	if (!node || node.length === 0) return null;
+
+	if (name === '<count>') {
+		return node.length || 1;
+	}
+
+	const first = getFirstNode(node);
 
 	if (name === '<text>') {
-		return node.textContent;
+		return first.textContent;
 	}
 
 	if (name === '<value>') {
-		return node.type === 'password' ? null : node.value;
+		return first.type === 'password' ? null : first.value;
 	}
 
-	return node.getAttribute(name);
+	return first.getAttribute(name);
 };
 
 // Returns a function that accepts a value and uses the provided expression to match against that
@@ -196,7 +206,7 @@ const resolveNode = (closestSelector, selector) => (node) => {
 	if (closestSelector) {
 		return node.closest(closestSelector);
 	} else if (selector) {
-		return node.querySelector(selector);
+		return node.querySelectorAll(selector);
 	}
 
 	return node;
@@ -227,7 +237,7 @@ const buildResolver = (elementConfig) => {
 	const expressionResolver = resolveExpression(expression);
 
 	return (node) => {
-		if (matches && !node.matches(matches)) return null;
+		if (matches && !getFirstNode(node).matches(matches)) return null;
 
 		return expressionResolver(valueResolver(nodeResolver(node)));
 	};
