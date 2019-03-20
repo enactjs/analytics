@@ -1,3 +1,4 @@
+import {onWindowReady} from '@enact/core/snapshot';
 import {fetchAppId} from '@enact/webos/application';
 import {info} from '@enact/webos/pmloglib';
 
@@ -18,27 +19,29 @@ const configure = (cfg = {}) => {
 		...cfg
 	});
 
-	let {path} = cfg;
-	if (!path) {
-		const appId = fetchAppId();
+	onWindowReady(() => {
+		let {path} = cfg;
+		if (!path) {
+			const appId = fetchAppId();
 
-		// if we lack a path and can't parse an app id, we won't be able to
-		// retrieve a local config file so bail out
-		if (!appId) return;
+			// if we lack a path and can't parse an app id, we won't be able to
+			// retrieve a local config file so bail out
+			if (!appId) return;
 
-		path = `/mnt/lg/cmn_data/whitelist/dr/enact/${appId}.json`;
-	}
-
-	fetchConfig(path, {
-		sync: true,
-		parse: (body) => {
-			const json = JSON.parse(body);
-			if (json.messageId) {
-				messageId = json.messageId;
-			}
-
-			return json;
+			path = `/mnt/lg/cmn_data/whitelist/dr/enact/${appId}.json`;
 		}
+
+		fetchConfig(path, {
+			sync: true,
+			parse: (body) => {
+				const json = JSON.parse(body);
+				if (json.messageId) {
+					messageId = json.messageId;
+				}
+
+				return json;
+			}
+		});
 	});
 };
 
