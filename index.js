@@ -257,7 +257,7 @@ const buildDataResolver = (data) => {
 	const result = {};
 	Object.keys(data).forEach(key => {
 		const resolver = buildResolver(data[key]);
-		if (resolver != null) {
+		if (resolver) {
 			result[key] = resolver;
 		}
 	});
