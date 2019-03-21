@@ -154,11 +154,13 @@ const getFirstNode = (nodeOrList) => {
 };
 
 const resolveAttribute = (name) => (node) => {
-	if (!node || node.length === 0) return null;
-
+	// normally, if node isn't found, we bail on data resolution. <count> is the exception in which
+	// we'll return 0 if the node isn't found and it's the last in the resolution chain.
 	if (name === '<count>') {
-		return node.length || 1;
+		return node ? (node.length || 1) : 0;
 	}
+
+	if (!node || node.length === 0) return null;
 
 	const first = getFirstNode(node);
 
@@ -242,7 +244,7 @@ const buildResolver = (elementConfig) => {
 	const expressionResolver = resolveExpression(expression);
 
 	return (node) => {
-		if (matches && !getFirstNode(node).matches(matches)) return null;
+		if (!node || matches && !getFirstNode(node).matches(matches)) return null;
 
 		return expressionResolver(valueResolver(nodeResolver(node)));
 	};
@@ -255,7 +257,7 @@ const buildDataResolver = (data) => {
 	const result = {};
 	Object.keys(data).forEach(key => {
 		const resolver = buildResolver(data[key]);
-		if (resolver) {
+		if (resolver != null) {
 			result[key] = resolver;
 		}
 	});
@@ -289,7 +291,7 @@ const resolveData = (node) => {
 	const result = {};
 	Object.keys(config.data).forEach(key => {
 		const value = config.data[key](node);
-		if (value) {
+		if (value != null) {
 			result[key] = value;
 		}
 	});
