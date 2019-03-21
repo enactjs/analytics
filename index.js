@@ -22,8 +22,13 @@ const config = {
 	//     AttributeName = String
 	//     RegularExpressionString = String
 	//     TextContentSelector = '<text>'
+	//     ValueContentSelector = '<value>'
+	//     CountContentSelector = '<count>'
 	//
-	//     AttributeSelector = AttributeName | TextContentSelector
+	//     AttributeSelector = AttributeName |
+	//                         TextContentSelector |
+	//                         ValueContentSelector |
+	//                         CountContentSelector
 	//     ClosestSelector = CssSelector
 	//     Selector = CssSelector
 	//     Matches = CssSelector
