@@ -13,67 +13,74 @@ import warning from 'warning';
 // When `idle`, accumulates the log events to be processed during the next idle frame or on unload
 const logQueue = [];
 
-const config = {
-	// An object mapping a DSL for metadata resolution to metadata keys.
-	//
-	// Resolution DSL:
-	//
-	//     CssSelector = String
-	//     AttributeName = String
-	//     RegularExpressionString = String
-	//     TextContentSelector = '<text>'
-	//     ValueContentSelector = '<value>'
-	//     CountContentSelector = '<count>'
-	//
-	//     AttributeSelector = AttributeName |
-	//                         TextContentSelector |
-	//                         ValueContentSelector |
-	//                         CountContentSelector
-	//     ClosestSelector = CssSelector
-	//     Selector = CssSelector
-	//     Matches = CssSelector
-	//     Expression = RegularExpressionString
-	//
-	//     Resolver = AttributeSelector | {
-	//         matches?: Matches,
-	//         closest?: ClosestSelector | selector?: Selector,
-	//         value: Resolver | Resolver[],
-	//         expression?: Expression
-	//     }
-	//
-	// ```
-	// data: {
-	//     panel: {
-	//         closest: "article[role='region']",
-	//         value: {
-	//             selector: "header h1",
-	//             value: "<text>"
-	//         }
-	//     },
-	//     icon: {
-	//         matches: "[role='button']",
-	//         selector: "[class *= 'Icon_icon']",
-	//         value: [
-	//             '<text>',
-	//             {
-	//                 value: "style",
-	//                 expression: "url\(.*\/(.*)\)"
-	//             }
-	//         ]
-	//     }
-	// }
-	// ```
-	data: null,
+// const entryConfig = {
+// 	// An object mapping a DSL for metadata resolution to metadata keys.
+// 	//
+// 	// Resolution DSL:
+// 	//
+// 	//     CssSelector = String
+// 	//     AttributeName = String
+// 	//     RegularExpressionString = String
+// 	//     TextContentSelector = '<text>'
+// 	//     ValueContentSelector = '<value>'
+// 	//     CountContentSelector = '<count>'
+// 	//
+// 	//     AttributeSelector = AttributeName |
+// 	//                         TextContentSelector |
+// 	//                         ValueContentSelector |
+// 	//                         CountContentSelector
+// 	//     ClosestSelector = CssSelector
+// 	//     Selector = CssSelector
+// 	//     Matches = CssSelector
+// 	//     Expression = RegularExpressionString
+// 	//
+// 	//     Resolver = AttributeSelector | {
+// 	//         matches?: Matches,
+// 	//         closest?: ClosestSelector | selector?: Selector,
+// 	//         value: Resolver | Resolver[],
+// 	//         expression?: Expression
+// 	//     }
+// 	//
+// 	// ```
+// 	// data: {
+// 	//     panel: {
+// 	//         closest: "article[role='region']",
+// 	//         value: {
+// 	//             selector: "header h1",
+// 	//             value: "<text>"
+// 	//         }
+// 	//     },
+// 	//     icon: {
+// 	//         matches: "[role='button']",
+// 	//         selector: "[class *= 'Icon_icon']",
+// 	//         value: [
+// 	//             '<text>',
+// 	//             {
+// 	//                 value: "style",
+// 	//                 expression: "url\(.*\/(.*)\)"
+// 	//             }
+// 	//         ]
+// 	//     }
+// 	// }
+// 	// ```
+// 	data: null,
 
+// 	// An object of filter rules that remove entries from the log. When null, no events are excluded
+// 	// by the filter.
+// 	exclude: null,
+//	// Optional custom filter function to remove entries from the log
+//	filter: null,
+//
+// 	// An object of filter rules that must be met to be included. When null, any event not excluded
+// 	// by `exclude` will be logged.
+// 	include: null
+// };
+
+const config = {
 	// Enables metric logging
 	enabled: false,
 
-	// An object of filter rules that remove entries from the log. When null, no events are excluded
-	// by the filter.
-	exclude: null,
-
-	// Optional custom filter function to remove entries from the log
-	filter: null,
+	entries: null,
 
 	// Function accepting the message -- which includes the time, type, label, and output of `data`
 	// resolvers -- and returning a log entry in whichever format the application chooses.
@@ -85,10 +92,6 @@ const config = {
 
 	// Process events asynchronous when the system is idle
 	idle: true,
-
-	// An object of filter rules that must be met to be included. When null, any event not excluded
-	// by `exclude` will be logged.
-	include: null,
 
 	// Array of events or object mapping events to filter functions
 	// listeners: ['focus', 'load']
@@ -267,15 +270,15 @@ const buildDataResolver = (data) => {
 
 // Filters the message based on the `include` and `exclude` rules as well as the optional custom
 // filter function.
-const filter = (msg) => {
+const filter = (entry, msg) => {
 	if (
-		(config.exclude && matchesRules(config.exclude, msg)) ||
-		(config.include && !matchesRules(config.include, msg))
+		(entry.exclude && matchesRules(entry.exclude, msg)) ||
+		(entry.include && !matchesRules(entry.include, msg))
 	) {
 		return false;
 	}
 
-	return config.filter ? config.filter(msg) : true;
+	return entry.filter ? entry.filter(msg) : true;
 };
 
 // Resolves the label for the message
@@ -285,12 +288,12 @@ const resolveLabel = buildResolver([
 	'<text>'
 ]);
 
-const resolveData = (node) => {
-	if (!config.data) return null;
+const resolveData = (entry, node) => {
+	if (!entry.data) return null;
 
 	const result = {};
-	Object.keys(config.data).forEach(key => {
-		const value = config.data[key](node);
+	Object.keys(entry.data).forEach(key => {
+		const value = entry.data[key](node);
 		if (value != null) {
 			result[key] = value;
 		}
@@ -300,14 +303,14 @@ const resolveData = (node) => {
 };
 
 // Default message formatter
-const format = ({target, ...rest}) => {
+const format = (entry, {target, ...rest}) => {
 	if (!target) return null;
 
 	const message = {
 		time: Date.now(),
 		label: isGlobal(target) ? 'global' : resolveLabel(target),
 		...rest,
-		...resolveData(target)
+		...resolveData(entry, target)
 	};
 
 	if (config.format) {
@@ -327,9 +330,23 @@ const idle = (msg) => {
 	}
 };
 
+const matchEntry = (ev) => {
+	if (!config.entries || config.entries.length === 0) return;
+
+	return config.entries.reduce((result, entry) => {
+		if (result) return result;
+
+		const msg = format(entry, ev);
+		// console.log(msg);
+		if (filter(entry, msg)) {
+			return msg;
+		}
+	}, null);
+};
+
 // Logs the formatted message
 const logEntry = (msg) => {
-	if (!msg || !filter(msg)) return;
+	if (!msg) return;
 	if (config.idle) {
 		idle(msg);
 	} else if (config.log) {
@@ -338,7 +355,7 @@ const logEntry = (msg) => {
 };
 
 // Accepts an event to consider for logging
-const log = (ev) => logEntry(format({
+const log = (ev) => logEntry(matchEntry({
 	...ev,
 	target: closest(ev.target)
 }));
@@ -384,17 +401,24 @@ const enable = () => {
 	config.enabled = true;
 };
 
+const configureEntry = (cfg = {}) => {
+	const entry = {};
+	if (typeof cfg.data === 'object')      entry.data = buildDataResolver(cfg.data);
+	if (typeof cfg.exclude === 'object')   entry.exclude = buildRuleset(cfg.exclude);
+	if (typeof cfg.filter === 'function')  entry.filter = cfg.filter;
+	if (typeof cfg.include === 'object')   entry.include = buildRuleset(cfg.include);
+
+	return entry;
+};
+
 // Configures the logging behavior
 const configure = (cfg = {}) => {
-	if (typeof cfg.exclude === 'object')   config.exclude = buildRuleset(cfg.exclude);
-	if (typeof cfg.filter === 'function')  config.filter = cfg.filter;
+	if (Array.isArray(cfg.entries))        config.entries = cfg.entries.map(configureEntry);
 	if (typeof cfg.format === 'function')  config.format = cfg.format;
 	if (typeof cfg.frameSize === 'number') config.frameSize = cfg.frameSize;
 	if (typeof cfg.idle === 'boolean')     config.idle = cfg.idle;
-	if (typeof cfg.include === 'object')   config.include = buildRuleset(cfg.include);
 	if (typeof cfg.log === 'function')     config.log = cfg.log;
 	if (typeof cfg.selector === 'string')  config.selector = cfg.selector;
-	if (typeof cfg.data === 'object')      config.data = buildDataResolver(cfg.data);
 
 	if (typeof cfg.enabled === 'boolean') {
 		(cfg.enabled ? enable : disable)();

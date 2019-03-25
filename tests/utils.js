@@ -3,7 +3,16 @@ import {mount} from 'enzyme';
 import React from 'react';
 
 const defaultTarget = '#test-target';
-const defaultConfig = {enabled: true, selector: '[id]', idle: false};
+const defaultConfig = {
+	enabled: true,
+	selector: '[id]',
+	idle: false,
+	entries: [
+		{
+			data: {}
+		}
+	]
+};
 const container = document.body.appendChild(document.createElement('div'));
 
 // Keymap for keydown usage

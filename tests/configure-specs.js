@@ -50,27 +50,27 @@ describe('configure', () => {
 	describe('#exclude', () => {
 		test('non-existant key does not prevent the log output', () => {
 			const exclude = {unusedProp: 'test'};
-			const log = mountTriggerEvent({exclude});
+			const log = mountTriggerEvent({entries: [{exclude}]});
 			expect(log.mock.calls.length).toBe(1);
 		});
 		test('existing key, which does not string match, allows log entry in output', () => {
 			const exclude = {label: 'unused'};
-			const log = mountTriggerEvent({exclude});
+			const log = mountTriggerEvent({entries: [{exclude}]});
 			expect(log.mock.calls.length).toBe(1);
 		});
 		test('existing key, which does not match within string array, allows log entry in output', () => {
 			const exclude = {label: ['unused1', 'unused2']};
-			const log = mountTriggerEvent({exclude});
+			const log = mountTriggerEvent({entries: [{exclude}]});
 			expect(log.mock.calls.length).toBe(1);
 		});
 		test('existing key, which has a string match, excludes log entry from output', () => {
 			const exclude = {label: 'Aria'};
-			const log = mountTriggerEvent({exclude, target: '#aria-button'});
+			const log = mountTriggerEvent({entries: [{exclude}], target: '#aria-button'});
 			expect(log.mock.calls.length).toBe(0);
 		});
 		test('validate existing key, which has a match within string array, excludes log entry from output', () => {
 			const exclude = {label: ['Aria', 'Other']};
-			const log = mountTriggerEvent({exclude, target: '#aria-button'});
+			const log = mountTriggerEvent({entries: [{exclude}], target: '#aria-button'});
 			expect(log.mock.calls.length).toBe(0);
 		});
 	});
@@ -78,27 +78,27 @@ describe('configure', () => {
 	describe('#include', () => {
 		test('non-existant key does not allow the log output', () => {
 			const include = {unusedProp: 'test'};
-			const log = mountTriggerEvent({include});
+			const log = mountTriggerEvent({entries: [{include}]});
 			expect(log.mock.calls.length).toBe(0);
 		});
 		test('existing key, which does not string match, excludes log entry from output', () => {
 			const include = {label: 'unused'};
-			const log = mountTriggerEvent({include});
+			const log = mountTriggerEvent({entries: [{include}]});
 			expect(log.mock.calls.length).toBe(0);
 		});
 		test('existing key, which does not match within string array, excludes log entry from output', () => {
 			const include = {label: ['unused1', 'unused2']};
-			const log = mountTriggerEvent({include});
+			const log = mountTriggerEvent({entries: [{include}]});
 			expect(log.mock.calls.length).toBe(0);
 		});
 		test('existing key, which has a string match, allows log entry in output', () => {
 			const include = {label: 'Aria'};
-			const log = mountTriggerEvent({include, target: '#aria-button'});
+			const log = mountTriggerEvent({entries: [{include}], target: '#aria-button'});
 			expect(log.mock.calls.length).toBe(1);
 		});
 		test('existing key, which has a match within string array, allows log entry in output', () => {
 			const include = {label: ['Aria', 'Other']};
-			const log = mountTriggerEvent({include, target: '#aria-button'});
+			const log = mountTriggerEvent({entries: [{include}], target: '#aria-button'});
 			expect(log.mock.calls.length).toBe(1);
 		});
 	});
@@ -106,12 +106,12 @@ describe('configure', () => {
 	describe('#filter', () => {
 		test('falsey return prevents log output', () => {
 			const filter = () => false;
-			const log = mountTriggerEvent({filter});
+			const log = mountTriggerEvent({entries: [{filter}]});
 			expect(log.mock.calls.length).toBe(0);
 		});
 		test('truthy return allows log output', () => {
 			const filter = () => true;
-			const log = mountTriggerEvent({filter});
+			const log = mountTriggerEvent({entries: [{filter}]});
 			expect(log.mock.calls.length).toBe(1);
 		});
 	});
@@ -256,7 +256,7 @@ describe('configure', () => {
 			const log = mountTriggerEvent({idle: false});
 			expect(log.mock.calls.length).toBe(1);
 		});
-		test('log flushing waits for system idle state when`idle` is true', done => {
+		test('log flushing waits for system idle state when `idle` is true', done => {
 			const log = mountTriggerEvent({idle: true});
 			expect(log.mock.calls.length).toBe(0);
 			const after = new Job(() => {
