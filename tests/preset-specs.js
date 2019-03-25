@@ -82,6 +82,11 @@ describe('preset', () => {
 			configure.mock.calls[0][0].log({time: Date.now()});
 			expect(window.PalmSystem.PmLogString.mock.calls[0][1]).toBe('MY_MSG_ID');
 		});
+		test('NL_ENACT id can be changed via messageId within the message payload', () => {
+			webos.configure({path: './custom-id.json'});
+			configure.mock.calls[0][0].log({time: Date.now(), messageId: 'NL_CUSTOM'});
+			expect(window.PalmSystem.PmLogString.mock.calls[0][1]).toBe('NL_CUSTOM');
+		});
 		test('no app config file is read on non-webOS systems', () => {
 			delete window.PalmSystem;
 			webos.configure();
