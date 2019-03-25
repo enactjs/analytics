@@ -4,13 +4,15 @@ describe('configure data', () => {
 	// Ensure fresh instance of analytics with untouch default values
 	beforeEach(() => jest.resetModules());
 
-	describe('#value', () => {
+	describe('#attribute', () => {
 		test('base case of a simple <text> pseudo-attribute', () => {
 			const cfg = {
 				entries: [
 					{
 						data: {
-							innerText: '<text>'
+							innerText: {
+								attribute: '<text>'
+							}
 						}
 					}
 				]
@@ -23,7 +25,9 @@ describe('configure data', () => {
 				entries: [
 					{
 						data: {
-							altLabel: 'alt'
+							altLabel: {
+								attribute: 'alt'
+							}
 						}
 					}
 				]
@@ -38,7 +42,7 @@ describe('configure data', () => {
 					{
 						data: {
 							altLabel: {
-								value: 'alt'
+								attribute: 'alt'
 							}
 						}
 					}
@@ -52,7 +56,9 @@ describe('configure data', () => {
 				entries: [
 					{
 						data: {
-							innerText: '<value>'
+							innerText: {
+								attribute: '<value>'
+							}
 						}
 					}
 				]
@@ -65,7 +71,9 @@ describe('configure data', () => {
 				entries: [
 					{
 						data: {
-							innerText: '<value>'
+							innerText: {
+								attribute: '<value>'
+							}
 						}
 					}
 				]
@@ -78,7 +86,9 @@ describe('configure data', () => {
 				entries: [
 					{
 						data: {
-							innerText: '<value>'
+							innerText: {
+								attribute: '<value>'
+							}
 						}
 					}
 				]
@@ -93,7 +103,7 @@ describe('configure data', () => {
 						data: {
 							count: {
 								selector: 'li',
-								value: '<count>'
+								attribute: '<count>'
 							}
 						}
 					}
@@ -109,7 +119,7 @@ describe('configure data', () => {
 						data: {
 							count: {
 								closest: 'section',
-								value: '<count>'
+								attribute: '<count>'
 							}
 						}
 					}
@@ -125,7 +135,7 @@ describe('configure data', () => {
 						data: {
 							count: {
 								closest: 'does-not-exist',
-								value: '<count>'
+								attribute: '<count>'
 							}
 						}
 					}
@@ -141,9 +151,9 @@ describe('configure data', () => {
 						data: {
 							count: {
 								closest: 'does-not-exist',
-								value: {
+								attribute: {
 									selector: 'section',
-									value: '<count>'
+									attribute: '<count>'
 								}
 							}
 						}
@@ -160,7 +170,7 @@ describe('configure data', () => {
 						data: {
 							sectionTitle: {
 								selector: 'header h1',
-								value: '<text>'
+								attribute: '<text>'
 							}
 						}
 					}
@@ -176,7 +186,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'section',
-								value: 'data-section-index'
+								attribute: 'data-section-index'
 							}
 						}
 					}
@@ -190,7 +200,11 @@ describe('configure data', () => {
 				entries: [
 					{
 						data: {
-							id: ['id', 'data-spotlight-id', 'data-component-id']
+							id: [
+								{attribute: 'id'},
+								{attribute: 'data-spotlight-id'},
+								{attribute: 'data-component-id'}
+							]
 						}
 					}
 				]
@@ -206,11 +220,11 @@ describe('configure data', () => {
 							sectionIndex: [
 								{
 									closest: 'p',
-									value: 'data-section-index'
+									attribute: 'data-section-index'
 								},
 								{
 									closest: 'section',
-									value: 'data-section-index'
+									attribute: 'data-section-index'
 								}
 							]
 						}
@@ -222,6 +236,37 @@ describe('configure data', () => {
 		});
 	});
 
+	describe('#value', () => {
+		test('base case of a string', () => {
+			const cfg = {
+				entries: [
+					{
+						data: {
+							innerText: 'static value'
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent({...cfg, target: '#data-button'});
+			expect(log.mock.calls[0][0].innerText).toBe('static value');
+		});
+		test('base case of a object', () => {
+			const cfg = {
+				entries: [
+					{
+						data: {
+							innerText: {
+								value: 'static value'
+							}
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent({...cfg, target: '#data-button'});
+			expect(log.mock.calls[0][0].innerText).toBe('static value');
+		});
+	});
+
 	describe('#closest', () => {
 		test('base case of using closest where data is found', () => {
 			const cfg = {
@@ -230,7 +275,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'section',
-								value: 'data-section-index'
+								attribute: 'data-section-index'
 							}
 						}
 					}
@@ -239,6 +284,22 @@ describe('configure data', () => {
 			const log = mountTriggerEvent(cfg);
 			expect(log.mock.calls[0][0].sectionIndex).toBe('0');
 		});
+		test('base case of using closest with value where data is found', () => {
+			const cfg = {
+				entries: [
+					{
+						data: {
+							innerText: {
+								closest: 'section',
+								value: 'static value'
+							}
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent(cfg);
+			expect(log.mock.calls[0][0].innerText).toBe('static value');
+		});
 		test('base case of using closest where nothing is found', () => {
 			const cfg = {
 				entries: [
@@ -246,7 +307,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'p',
-								value: 'data-section-index'
+								attribute: 'data-section-index'
 							}
 						}
 					}
@@ -265,7 +326,7 @@ describe('configure data', () => {
 						data: {
 							iconUrl: {
 								selector: '[role=icon]',
-								value: 'src'
+								attribute: 'src'
 							}
 						}
 					}
@@ -274,6 +335,22 @@ describe('configure data', () => {
 			const log = mountTriggerEvent(cfg);
 			expect(log.mock.calls[0][0].iconUrl).toBe('https://via.placeholder.com/50');
 		});
+		test('base case of using selector with value where data is found', () => {
+			const cfg = {
+				entries: [
+					{
+						data: {
+							iconUrl: {
+								selector: '[role=icon]',
+								value: 'static value'
+							}
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent(cfg);
+			expect(log.mock.calls[0][0].iconUrl).toBe('static value');
+		});
 		test('base case of using selector where nothing is found', () => {
 			const cfg = {
 				entries: [
@@ -281,7 +358,7 @@ describe('configure data', () => {
 						data: {
 							iconUrl: {
 								selector: '[role=other]',
-								value: 'src'
+								attribute: 'src'
 							}
 						}
 					}
@@ -301,7 +378,7 @@ describe('configure data', () => {
 							iconUrl: {
 								matches: '[alt]', // matches #test-target, which has alt attribute
 								selector: 'img',
-								value: 'src'
+								attribute: 'src'
 							}
 
 						}
@@ -319,7 +396,7 @@ describe('configure data', () => {
 							iconUrl: {
 								matches: '[alt]',
 								selector: 'img',
-								value: 'src'
+								attribute: 'src'
 							}
 						}
 					}
@@ -338,7 +415,7 @@ describe('configure data', () => {
 						data: {
 							avatarHost: {
 								selector: 'img[role=avatar]',
-								value: 'src',
+								attribute: 'src',
 								expression: 'https://(.*)/.*'
 							}
 						}
@@ -355,7 +432,7 @@ describe('configure data', () => {
 						data: {
 							avatarHost: {
 								selector: 'img[role=avatar]',
-								value: 'src',
+								attribute: 'src',
 								expression: 'ftp://(.*)/.*'
 							}
 						}

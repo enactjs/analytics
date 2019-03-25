@@ -8,9 +8,7 @@ const defaultConfig = {
 	selector: '[id]',
 	idle: false,
 	entries: [
-		{
-			data: {}
-		}
+		{}
 	]
 };
 const container = document.body.appendChild(document.createElement('div'));

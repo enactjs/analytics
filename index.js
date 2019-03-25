@@ -37,7 +37,7 @@ const logQueue = [];
 // 	//     Resolver = AttributeSelector | {
 // 	//         matches?: Matches,
 // 	//         closest?: ClosestSelector | selector?: Selector,
-// 	//         value: Resolver | Resolver[],
+// 	//         value: String | attribute: Resolver | Resolver[],
 // 	//         expression?: Expression
 // 	//     }
 // 	//
@@ -45,18 +45,18 @@ const logQueue = [];
 // 	// data: {
 // 	//     panel: {
 // 	//         closest: "article[role='region']",
-// 	//         value: {
+// 	//         attribute: {
 // 	//             selector: "header h1",
-// 	//             value: "<text>"
+// 	//             attribute: "<text>"
 // 	//         }
 // 	//     },
 // 	//     icon: {
 // 	//         matches: "[role='button']",
 // 	//         selector: "[class *= 'Icon_icon']",
-// 	//         value: [
+// 	//         attribute: [
 // 	//             '<text>',
 // 	//             {
-// 	//                 value: "style",
+// 	//                 attribute: "style",
 // 	//                 expression: "url\(.*\/(.*)\)"
 // 	//             }
 // 	//         ]
@@ -233,17 +233,20 @@ const buildResolver = (elementConfig) => {
 	}
 
 	if (typeof elementConfig === 'string') {
-		return resolveAttribute(elementConfig);
+		return () => elementConfig;
 	}
 
-	const {value, expression, matches, closest: closestSelector, selector} = elementConfig;
+	const {attribute, value, expression, matches, closest: closestSelector, selector} = elementConfig;
 
-	// value is required if not a string
-	warning(value, 'Data resolvers must either be a string or object including a {value} member');
-	if (!value) return null;
+	// attribute or value is required if not a string
+	warning(
+		value || attribute,
+		'Data resolvers must either be a string or object including a {value} member'
+	);
+	if (!value && !attribute) return null;
 
 	const nodeResolver = resolveNode(closestSelector, selector);
-	const valueResolver = buildResolver(value);
+	const valueResolver = value ? () => value : resolveAttribute(attribute);
 	const expressionResolver = resolveExpression(expression);
 
 	return (node) => {
@@ -283,9 +286,9 @@ const filter = (entry, msg) => {
 
 // Resolves the label for the message
 const resolveLabel = buildResolver([
-	'data-metric-label',
-	'aria-label',
-	'<text>'
+	{attribute: 'data-metric-label'},
+	{attribute: 'aria-label'},
+	{attribute: '<text>'}
 ]);
 
 const resolveData = (entry, node) => {
