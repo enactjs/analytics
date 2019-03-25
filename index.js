@@ -22,8 +22,13 @@ const config = {
 	//     AttributeName = String
 	//     RegularExpressionString = String
 	//     TextContentSelector = '<text>'
+	//     ValueContentSelector = '<value>'
+	//     CountContentSelector = '<count>'
 	//
-	//     AttributeSelector = AttributeName | TextContentSelector
+	//     AttributeSelector = AttributeName |
+	//                         TextContentSelector |
+	//                         ValueContentSelector |
+	//                         CountContentSelector
 	//     ClosestSelector = CssSelector
 	//     Selector = CssSelector
 	//     Matches = CssSelector
@@ -144,18 +149,30 @@ const matchesRules = (ruleset, msg) => Object.keys(ruleset).some(key => {
 	return !!msg[key] && ruleset[key].test(msg[key]);
 });
 
+const getFirstNode = (nodeOrList) => {
+	return nodeOrList instanceof global.HTMLElement ? nodeOrList : nodeOrList[0];
+};
+
 const resolveAttribute = (name) => (node) => {
-	if (!node) return null;
+	// normally, if node isn't found, we bail on data resolution. <count> is the exception in which
+	// we'll return 0 if the node isn't found and it's the last in the resolution chain.
+	if (name === '<count>') {
+		return node ? (node.length || 1) : 0;
+	}
+
+	if (!node || node.length === 0) return null;
+
+	const first = getFirstNode(node);
 
 	if (name === '<text>') {
-		return node.textContent;
+		return first.textContent;
 	}
 
 	if (name === '<value>') {
-		return node.type === 'password' ? null : node.value;
+		return first.type === 'password' ? null : first.value;
 	}
 
-	return node.getAttribute(name);
+	return first.getAttribute(name);
 };
 
 // Returns a function that accepts a value and uses the provided expression to match against that
@@ -196,7 +213,7 @@ const resolveNode = (closestSelector, selector) => (node) => {
 	if (closestSelector) {
 		return node.closest(closestSelector);
 	} else if (selector) {
-		return node.querySelector(selector);
+		return node.querySelectorAll(selector);
 	}
 
 	return node;
@@ -227,7 +244,7 @@ const buildResolver = (elementConfig) => {
 	const expressionResolver = resolveExpression(expression);
 
 	return (node) => {
-		if (matches && !node.matches(matches)) return null;
+		if (!node || matches && !getFirstNode(node).matches(matches)) return null;
 
 		return expressionResolver(valueResolver(nodeResolver(node)));
 	};
@@ -274,7 +291,7 @@ const resolveData = (node) => {
 	const result = {};
 	Object.keys(config.data).forEach(key => {
 		const value = config.data[key](node);
-		if (value) {
+		if (value != null) {
 			result[key] = value;
 		}
 	});

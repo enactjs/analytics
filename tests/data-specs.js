@@ -50,6 +50,49 @@ describe('configure data', () => {
 			const log = mountTriggerEvent({data, target: '#data-input-password'});
 			expect(log.mock.calls[0][0].innerText).not.toBeDefined();
 		});
+		test('base case of <count> pseudo-attribute', () => {
+			const data = {
+				count: {
+					selector: 'li',
+					value: '<count>'
+				}
+			};
+			const log = mountTriggerEvent({data, target: '#data-list'});
+			expect(log.mock.calls[0][0].count).toBe(5);
+		});
+		test('base case of <count> pseudo-attribute with closest', () => {
+			const data = {
+				count: {
+					closest: 'section',
+					value: '<count>'
+				}
+			};
+			const log = mountTriggerEvent({data, target: '#data-list'});
+			expect(log.mock.calls[0][0].count).toBe(1);
+		});
+		test('advanced case of <count> pseudo-attribute with not found closest', () => {
+			const data = {
+				count: {
+					closest: 'does-not-exist',
+					value: '<count>'
+				}
+			};
+			const log = mountTriggerEvent({data, target: '#data-list'});
+			expect(log.mock.calls[0][0].count).toBe(0);
+		});
+		test('advanced case of <count> pseudo-attribute with not found closest and value selector', () => {
+			const data = {
+				count: {
+					closest: 'does-not-exist',
+					value: {
+						selector: 'section',
+						value: '<count>'
+					}
+				}
+			};
+			const log = mountTriggerEvent({data, target: '#data-list'});
+			expect(log.mock.calls[0][0].count).toBeUndefined();
+		});
 		test('advanced case of a object <text> value', () => {
 			const data = {
 				sectionTitle: {
