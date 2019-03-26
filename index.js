@@ -156,6 +156,10 @@ const getFirstNode = (nodeOrList) => {
 	return nodeOrList instanceof global.HTMLElement ? nodeOrList : nodeOrList[0];
 };
 
+const isAttributeString = (value) => {
+	return value[0] === '@' || value[0] === '<';
+};
+
 const resolveAttribute = (name) => (node) => {
 	// normally, if node isn't found, we bail on data resolution. <count> is the exception in which
 	// we'll return 0 if the node isn't found and it's the last in the resolution chain.
@@ -175,7 +179,7 @@ const resolveAttribute = (name) => (node) => {
 		return first.type === 'password' ? null : first.value;
 	}
 
-	return first.getAttribute(name);
+	return first.getAttribute(name.substr(1));
 };
 
 // Returns a function that accepts a value and uses the provided expression to match against that
@@ -233,20 +237,17 @@ const buildResolver = (elementConfig) => {
 	}
 
 	if (typeof elementConfig === 'string') {
-		return () => elementConfig;
+		return isAttributeString(elementConfig) ? resolveAttribute(elementConfig) : () => elementConfig;
 	}
 
-	const {attribute, value, expression, matches, closest: closestSelector, selector} = elementConfig;
+	const {value, expression, matches, closest: closestSelector, selector} = elementConfig;
 
-	// attribute or value is required if not a string
-	warning(
-		value || attribute,
-		'Data resolvers must either be a string or object including a {value} member'
-	);
-	if (!value && !attribute) return null;
+	// value is required if not a string
+	warning(value, 'Data resolvers must either be a string or object including a {value} member');
+	if (!value) return null;
 
 	const nodeResolver = resolveNode(closestSelector, selector);
-	const valueResolver = value ? () => value : resolveAttribute(attribute);
+	const valueResolver = buildResolver(value);
 	const expressionResolver = resolveExpression(expression);
 
 	return (node) => {
@@ -286,9 +287,9 @@ const filter = (entry, msg) => {
 
 // Resolves the label for the message
 const resolveLabel = buildResolver([
-	{attribute: 'data-metric-label'},
-	{attribute: 'aria-label'},
-	{attribute: '<text>'}
+	'@data-metric-label',
+	'@aria-label',
+	'<text>'
 ]);
 
 const resolveData = (entry, node) => {
