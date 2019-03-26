@@ -332,13 +332,12 @@ const idle = (msg) => {
 };
 
 const matchEntry = (ev) => {
-	if (!config.rules || config.rules.length === 0) return;
+	if (!config.rules) return format({}, ev);
 
 	return config.rules.reduce((result, entry) => {
 		if (result) return result;
 
 		const msg = format(entry, ev);
-		// console.log(msg);
 		if (filter(entry, msg)) {
 			return msg;
 		}
