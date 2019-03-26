@@ -7,7 +7,7 @@ const defaultConfig = {
 	enabled: true,
 	selector: '[id]',
 	idle: false,
-	entries: [
+	rules: [
 		{
 			data: {}
 		}
