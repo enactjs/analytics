@@ -6,10 +6,7 @@ const defaultTarget = '#test-target';
 const defaultConfig = {
 	enabled: true,
 	selector: '[id]',
-	idle: false,
-	entries: [
-		{}
-	]
+	idle: false
 };
 const container = document.body.appendChild(document.createElement('div'));
 
