@@ -342,7 +342,7 @@ const matchEntry = (ev) => {
 		if (result) return result;
 
 		const msg = format(entry, ev);
-		if (filter(entry, msg)) {
+		if (msg && filter(entry, msg)) {
 			return msg;
 		}
 	}, null);
