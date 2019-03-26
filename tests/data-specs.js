@@ -11,7 +11,7 @@ describe('configure data', () => {
 					{
 						data: {
 							innerText: {
-								attribute: '<text>'
+								value: '<text>'
 							}
 						}
 					}
@@ -26,7 +26,7 @@ describe('configure data', () => {
 					{
 						data: {
 							altLabel: {
-								attribute: 'alt'
+								value: '@alt'
 							}
 						}
 					}
@@ -42,7 +42,7 @@ describe('configure data', () => {
 					{
 						data: {
 							altLabel: {
-								attribute: 'alt'
+								value: '@alt'
 							}
 						}
 					}
@@ -57,7 +57,7 @@ describe('configure data', () => {
 					{
 						data: {
 							innerText: {
-								attribute: '<value>'
+								value: '<value>'
 							}
 						}
 					}
@@ -72,7 +72,7 @@ describe('configure data', () => {
 					{
 						data: {
 							innerText: {
-								attribute: '<value>'
+								value: '<value>'
 							}
 						}
 					}
@@ -87,7 +87,7 @@ describe('configure data', () => {
 					{
 						data: {
 							innerText: {
-								attribute: '<value>'
+								value: '<value>'
 							}
 						}
 					}
@@ -103,7 +103,7 @@ describe('configure data', () => {
 						data: {
 							count: {
 								selector: 'li',
-								attribute: '<count>'
+								value: '<count>'
 							}
 						}
 					}
@@ -119,7 +119,7 @@ describe('configure data', () => {
 						data: {
 							count: {
 								closest: 'section',
-								attribute: '<count>'
+								value: '<count>'
 							}
 						}
 					}
@@ -135,7 +135,7 @@ describe('configure data', () => {
 						data: {
 							count: {
 								closest: 'does-not-exist',
-								attribute: '<count>'
+								value: '<count>'
 							}
 						}
 					}
@@ -151,9 +151,9 @@ describe('configure data', () => {
 						data: {
 							count: {
 								closest: 'does-not-exist',
-								attribute: {
+								value: {
 									selector: 'section',
-									attribute: '<count>'
+									value: '<count>'
 								}
 							}
 						}
@@ -170,7 +170,7 @@ describe('configure data', () => {
 						data: {
 							sectionTitle: {
 								selector: 'header h1',
-								attribute: '<text>'
+								value: '<text>'
 							}
 						}
 					}
@@ -186,7 +186,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'section',
-								attribute: 'data-section-index'
+								value: '@data-section-index'
 							}
 						}
 					}
@@ -201,9 +201,9 @@ describe('configure data', () => {
 					{
 						data: {
 							id: [
-								{attribute: 'id'},
-								{attribute: 'data-spotlight-id'},
-								{attribute: 'data-component-id'}
+								{value: '@id'},
+								{value: '@data-spotlight-id'},
+								{value: '@data-component-id'}
 							]
 						}
 					}
@@ -220,11 +220,11 @@ describe('configure data', () => {
 							sectionIndex: [
 								{
 									closest: 'p',
-									attribute: 'data-section-index'
+									value: '@data-section-index'
 								},
 								{
 									closest: 'section',
-									attribute: 'data-section-index'
+									value: '@data-section-index'
 								}
 							]
 						}
@@ -275,7 +275,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'section',
-								attribute: 'data-section-index'
+								value: '@data-section-index'
 							}
 						}
 					}
@@ -307,7 +307,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'p',
-								attribute: 'data-section-index'
+								value: '@data-section-index'
 							}
 						}
 					}
@@ -326,7 +326,7 @@ describe('configure data', () => {
 						data: {
 							iconUrl: {
 								selector: '[role=icon]',
-								attribute: 'src'
+								value: '@src'
 							}
 						}
 					}
@@ -358,7 +358,7 @@ describe('configure data', () => {
 						data: {
 							iconUrl: {
 								selector: '[role=other]',
-								attribute: 'src'
+								value: '@src'
 							}
 						}
 					}
@@ -378,7 +378,7 @@ describe('configure data', () => {
 							iconUrl: {
 								matches: '[alt]', // matches #test-target, which has alt attribute
 								selector: 'img',
-								attribute: 'src'
+								value: '@src'
 							}
 
 						}
@@ -396,7 +396,7 @@ describe('configure data', () => {
 							iconUrl: {
 								matches: '[alt]',
 								selector: 'img',
-								attribute: 'src'
+								value: '@src'
 							}
 						}
 					}
@@ -415,7 +415,7 @@ describe('configure data', () => {
 						data: {
 							avatarHost: {
 								selector: 'img[role=avatar]',
-								attribute: 'src',
+								value: '@src',
 								expression: 'https://(.*)/.*'
 							}
 						}
@@ -432,7 +432,7 @@ describe('configure data', () => {
 						data: {
 							avatarHost: {
 								selector: 'img[role=avatar]',
-								attribute: 'src',
+								value: 'src',
 								expression: 'ftp://(.*)/.*'
 							}
 						}
