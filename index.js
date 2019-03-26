@@ -1,3 +1,4 @@
+
 /* global XMLHttpRequest */
 /* eslint no-console: "off" */
 
@@ -80,8 +81,6 @@ const config = {
 	// Enables metric logging
 	enabled: false,
 
-	entries: null,
-
 	// Function accepting the message -- which includes the time, type, label, and output of `data`
 	// resolvers -- and returning a log entry in whichever format the application chooses.
 	format: null,
@@ -102,6 +101,8 @@ const config = {
 
 	// Required application-defined function to log the events
 	log: null,
+
+	rules: null,
 
 	// A CSS selector which finds the closest ancestor from the target of an event to consider as
 	// the source for the purposes of logging
@@ -335,13 +336,12 @@ const idle = (msg) => {
 };
 
 const matchEntry = (ev) => {
-	if (!config.entries || config.entries.length === 0) return;
+	if (!config.rules) return format({}, ev);
 
-	return config.entries.reduce((result, entry) => {
+	return config.rules.reduce((result, entry) => {
 		if (result) return result;
 
 		const msg = format(entry, ev);
-		// console.log(msg);
 		if (filter(entry, msg)) {
 			return msg;
 		}
@@ -417,7 +417,7 @@ const configureEntry = (cfg = {}) => {
 
 // Configures the logging behavior
 const configure = (cfg = {}) => {
-	if (Array.isArray(cfg.entries))        config.entries = cfg.entries.map(configureEntry);
+	if (Array.isArray(cfg.rules))        config.rules = cfg.rules.map(configureEntry);
 	if (typeof cfg.format === 'function')  config.format = cfg.format;
 	if (typeof cfg.frameSize === 'number') config.frameSize = cfg.frameSize;
 	if (typeof cfg.idle === 'boolean')     config.idle = cfg.idle;

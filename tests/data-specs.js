@@ -7,7 +7,7 @@ describe('configure data', () => {
 	describe('#attribute', () => {
 		test('base case of a simple <text> pseudo-attribute', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							innerText: {
@@ -22,7 +22,7 @@ describe('configure data', () => {
 		});
 		test('base case of a simple attribute selector', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							altLabel: {
@@ -38,7 +38,7 @@ describe('configure data', () => {
 		test('base case of a simple value selector with nothing else', () => {
 			// Special edge case of no selector nor closest in object format
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							altLabel: {
@@ -53,7 +53,7 @@ describe('configure data', () => {
 		});
 		test('base case of a simple <value> pseudo-attribute', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							innerText: {
@@ -68,7 +68,7 @@ describe('configure data', () => {
 		});
 		test('base case of a simple <value> pseudo-attribute on <select>', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							innerText: {
@@ -83,7 +83,7 @@ describe('configure data', () => {
 		});
 		test('base case of a simple <value> pseudo-attribute on password field', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							innerText: {
@@ -98,7 +98,7 @@ describe('configure data', () => {
 		});
 		test('base case of <count> pseudo-attribute', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							count: {
@@ -114,7 +114,7 @@ describe('configure data', () => {
 		});
 		test('base case of <count> pseudo-attribute with closest', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							count: {
@@ -130,7 +130,7 @@ describe('configure data', () => {
 		});
 		test('advanced case of <count> pseudo-attribute with not found closest', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							count: {
@@ -146,7 +146,7 @@ describe('configure data', () => {
 		});
 		test('advanced case of <count> pseudo-attribute with not found closest and value selector', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							count: {
@@ -165,7 +165,7 @@ describe('configure data', () => {
 		});
 		test('advanced case of a object <text> value', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							sectionTitle: {
@@ -181,7 +181,7 @@ describe('configure data', () => {
 		});
 		test('advanced case of a object attribute value', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							sectionIndex: {
@@ -197,7 +197,7 @@ describe('configure data', () => {
 		});
 		test('advanced case of a array of resolver strings, returning first match', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							id: [
@@ -214,7 +214,7 @@ describe('configure data', () => {
 		});
 		test('advanced case of a array of resolver value objects, returning first match', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							sectionIndex: [
@@ -239,7 +239,7 @@ describe('configure data', () => {
 	describe('#value', () => {
 		test('base case of a string', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							innerText: 'static value'
@@ -252,7 +252,7 @@ describe('configure data', () => {
 		});
 		test('base case of a object', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							innerText: {
@@ -270,7 +270,7 @@ describe('configure data', () => {
 	describe('#closest', () => {
 		test('base case of using closest where data is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							sectionIndex: {
@@ -286,7 +286,7 @@ describe('configure data', () => {
 		});
 		test('base case of using closest with value where data is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							innerText: {
@@ -302,7 +302,7 @@ describe('configure data', () => {
 		});
 		test('base case of using closest where nothing is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							sectionIndex: {
@@ -321,7 +321,7 @@ describe('configure data', () => {
 	describe('#selector', () => {
 		test('base case of using selector where data is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							iconUrl: {
@@ -337,7 +337,7 @@ describe('configure data', () => {
 		});
 		test('base case of using selector with value where data is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							iconUrl: {
@@ -353,7 +353,7 @@ describe('configure data', () => {
 		});
 		test('base case of using selector where nothing is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							iconUrl: {
@@ -372,7 +372,7 @@ describe('configure data', () => {
 	describe('#matches', () => {
 		test('base case of using matches where data is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							iconUrl: {
@@ -390,7 +390,7 @@ describe('configure data', () => {
 		});
 		test('base case of using matches where nothing is found', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							iconUrl: {
@@ -410,7 +410,7 @@ describe('configure data', () => {
 	describe('#expression', () => {
 		test('base case of using expression where data is matched', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							avatarHost: {
@@ -427,7 +427,7 @@ describe('configure data', () => {
 		});
 		test('base case of using expression where nothing is matched', () => {
 			const cfg = {
-				entries: [
+				rules: [
 					{
 						data: {
 							avatarHost: {
