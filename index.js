@@ -20,13 +20,15 @@ const logQueue = [];
 // 	// Resolution DSL:
 // 	//
 // 	//     CssSelector = String
+// 	//     StaticValue = String
 // 	//     AttributeName = String
 // 	//     RegularExpressionString = String
 // 	//     TextContentSelector = '<text>'
 // 	//     ValueContentSelector = '<value>'
 // 	//     CountContentSelector = '<count>'
 // 	//
-// 	//     AttributeSelector = AttributeName |
+// 	//     AttributeSelector = StaticValue |
+// 	//                         '@' + AttributeName |
 // 	//                         TextContentSelector |
 // 	//                         ValueContentSelector |
 // 	//                         CountContentSelector
@@ -38,7 +40,7 @@ const logQueue = [];
 // 	//     Resolver = AttributeSelector | {
 // 	//         matches?: Matches,
 // 	//         closest?: ClosestSelector | selector?: Selector,
-// 	//         value: String | attribute: Resolver | Resolver[],
+// 	//         value: Resolver | Resolver[],
 // 	//         expression?: Expression
 // 	//     }
 // 	//
@@ -46,18 +48,18 @@ const logQueue = [];
 // 	// data: {
 // 	//     panel: {
 // 	//         closest: "article[role='region']",
-// 	//         attribute: {
+// 	//         value: {
 // 	//             selector: "header h1",
-// 	//             attribute: "<text>"
+// 	//             value: "<text>"
 // 	//         }
 // 	//     },
 // 	//     icon: {
 // 	//         matches: "[role='button']",
 // 	//         selector: "[class *= 'Icon_icon']",
-// 	//         attribute: [
+// 	//         value: [
 // 	//             '<text>',
 // 	//             {
-// 	//                 attribute: "style",
+// 	//                 value: "style",
 // 	//                 expression: "url\(.*\/(.*)\)"
 // 	//             }
 // 	//         ]

@@ -10,9 +10,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							innerText: {
-								value: '<text>'
-							}
+							innerText: '<text>'
 						}
 					}
 				]
@@ -25,9 +23,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							altLabel: {
-								value: '@alt'
-							}
+							altLabel: '@alt'
 						}
 					}
 				]
@@ -56,9 +52,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							innerText: {
-								value: '<value>'
-							}
+							innerText: '<value>'
 						}
 					}
 				]
@@ -71,9 +65,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							innerText: {
-								value: '<value>'
-							}
+							innerText: '<value>'
 						}
 					}
 				]
@@ -86,9 +78,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							innerText: {
-								value: '<value>'
-							}
+							innerText: '<value>'
 						}
 					}
 				]
@@ -200,11 +190,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							id: [
-								{value: '@id'},
-								{value: '@data-spotlight-id'},
-								{value: '@data-component-id'}
-							]
+							id: ['@id', '@data-spotlight-id', '@data-component-id']
 						}
 					}
 				]
