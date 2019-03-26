@@ -20,13 +20,15 @@ const logQueue = [];
 // 	// Resolution DSL:
 // 	//
 // 	//     CssSelector = String
+// 	//     StaticValue = String
 // 	//     AttributeName = String
 // 	//     RegularExpressionString = String
 // 	//     TextContentSelector = '<text>'
 // 	//     ValueContentSelector = '<value>'
 // 	//     CountContentSelector = '<count>'
 // 	//
-// 	//     AttributeSelector = AttributeName |
+// 	//     AttributeSelector = StaticValue |
+// 	//                         '@' + AttributeName |
 // 	//                         TextContentSelector |
 // 	//                         ValueContentSelector |
 // 	//                         CountContentSelector
@@ -157,6 +159,10 @@ const getFirstNode = (nodeOrList) => {
 	return nodeOrList instanceof global.HTMLElement ? nodeOrList : nodeOrList[0];
 };
 
+const isAttributeString = (value) => {
+	return value[0] === '@' || value[0] === '<';
+};
+
 const resolveAttribute = (name) => (node) => {
 	// normally, if node isn't found, we bail on data resolution. <count> is the exception in which
 	// we'll return 0 if the node isn't found and it's the last in the resolution chain.
@@ -176,7 +182,7 @@ const resolveAttribute = (name) => (node) => {
 		return first.type === 'password' ? null : first.value;
 	}
 
-	return first.getAttribute(name);
+	return first.getAttribute(name.substr(1));
 };
 
 // Returns a function that accepts a value and uses the provided expression to match against that
@@ -234,7 +240,7 @@ const buildResolver = (elementConfig) => {
 	}
 
 	if (typeof elementConfig === 'string') {
-		return resolveAttribute(elementConfig);
+		return isAttributeString(elementConfig) ? resolveAttribute(elementConfig) : () => elementConfig;
 	}
 
 	const {value, expression, matches, closest: closestSelector, selector} = elementConfig;
@@ -284,8 +290,8 @@ const filter = (entry, msg) => {
 
 // Resolves the label for the message
 const resolveLabel = buildResolver([
-	'data-metric-label',
-	'aria-label',
+	'@data-metric-label',
+	'@aria-label',
 	'<text>'
 ]);
 

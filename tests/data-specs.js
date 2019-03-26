@@ -4,7 +4,7 @@ describe('configure data', () => {
 	// Ensure fresh instance of analytics with untouch default values
 	beforeEach(() => jest.resetModules());
 
-	describe('#value', () => {
+	describe('#attribute', () => {
 		test('base case of a simple <text> pseudo-attribute', () => {
 			const cfg = {
 				rules: [
@@ -23,7 +23,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							altLabel: 'alt'
+							altLabel: '@alt'
 						}
 					}
 				]
@@ -38,7 +38,7 @@ describe('configure data', () => {
 					{
 						data: {
 							altLabel: {
-								value: 'alt'
+								value: '@alt'
 							}
 						}
 					}
@@ -176,7 +176,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'section',
-								value: 'data-section-index'
+								value: '@data-section-index'
 							}
 						}
 					}
@@ -190,7 +190,7 @@ describe('configure data', () => {
 				rules: [
 					{
 						data: {
-							id: ['id', 'data-spotlight-id', 'data-component-id']
+							id: ['@id', '@data-spotlight-id', '@data-component-id']
 						}
 					}
 				]
@@ -206,11 +206,11 @@ describe('configure data', () => {
 							sectionIndex: [
 								{
 									closest: 'p',
-									value: 'data-section-index'
+									value: '@data-section-index'
 								},
 								{
 									closest: 'section',
-									value: 'data-section-index'
+									value: '@data-section-index'
 								}
 							]
 						}
@@ -222,6 +222,37 @@ describe('configure data', () => {
 		});
 	});
 
+	describe('#value', () => {
+		test('base case of a string', () => {
+			const cfg = {
+				rules: [
+					{
+						data: {
+							innerText: 'static value'
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent({...cfg, target: '#data-button'});
+			expect(log.mock.calls[0][0].innerText).toBe('static value');
+		});
+		test('base case of a object', () => {
+			const cfg = {
+				rules: [
+					{
+						data: {
+							innerText: {
+								value: 'static value'
+							}
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent({...cfg, target: '#data-button'});
+			expect(log.mock.calls[0][0].innerText).toBe('static value');
+		});
+	});
+
 	describe('#closest', () => {
 		test('base case of using closest where data is found', () => {
 			const cfg = {
@@ -230,7 +261,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'section',
-								value: 'data-section-index'
+								value: '@data-section-index'
 							}
 						}
 					}
@@ -239,6 +270,22 @@ describe('configure data', () => {
 			const log = mountTriggerEvent(cfg);
 			expect(log.mock.calls[0][0].sectionIndex).toBe('0');
 		});
+		test('base case of using closest with value where data is found', () => {
+			const cfg = {
+				rules: [
+					{
+						data: {
+							innerText: {
+								closest: 'section',
+								value: 'static value'
+							}
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent(cfg);
+			expect(log.mock.calls[0][0].innerText).toBe('static value');
+		});
 		test('base case of using closest where nothing is found', () => {
 			const cfg = {
 				rules: [
@@ -246,7 +293,7 @@ describe('configure data', () => {
 						data: {
 							sectionIndex: {
 								closest: 'p',
-								value: 'data-section-index'
+								value: '@data-section-index'
 							}
 						}
 					}
@@ -265,7 +312,7 @@ describe('configure data', () => {
 						data: {
 							iconUrl: {
 								selector: '[role=icon]',
-								value: 'src'
+								value: '@src'
 							}
 						}
 					}
@@ -274,6 +321,22 @@ describe('configure data', () => {
 			const log = mountTriggerEvent(cfg);
 			expect(log.mock.calls[0][0].iconUrl).toBe('https://via.placeholder.com/50');
 		});
+		test('base case of using selector with value where data is found', () => {
+			const cfg = {
+				rules: [
+					{
+						data: {
+							iconUrl: {
+								selector: '[role=icon]',
+								value: 'static value'
+							}
+						}
+					}
+				]
+			};
+			const log = mountTriggerEvent(cfg);
+			expect(log.mock.calls[0][0].iconUrl).toBe('static value');
+		});
 		test('base case of using selector where nothing is found', () => {
 			const cfg = {
 				rules: [
@@ -281,7 +344,7 @@ describe('configure data', () => {
 						data: {
 							iconUrl: {
 								selector: '[role=other]',
-								value: 'src'
+								value: '@src'
 							}
 						}
 					}
@@ -301,7 +364,7 @@ describe('configure data', () => {
 							iconUrl: {
 								matches: '[alt]', // matches #test-target, which has alt attribute
 								selector: 'img',
-								value: 'src'
+								value: '@src'
 							}
 
 						}
@@ -319,7 +382,7 @@ describe('configure data', () => {
 							iconUrl: {
 								matches: '[alt]',
 								selector: 'img',
-								value: 'src'
+								value: '@src'
 							}
 						}
 					}
@@ -338,7 +401,7 @@ describe('configure data', () => {
 						data: {
 							avatarHost: {
 								selector: 'img[role=avatar]',
-								value: 'src',
+								value: '@src',
 								expression: 'https://(.*)/.*'
 							}
 						}
