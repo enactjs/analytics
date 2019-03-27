@@ -1,6 +1,6 @@
 {
   "name": "@enact/analytics",
-  "version": "0.1.0",
+  "version": "1.0.0-beta.1",
   "description": "Generalized application interaction analytics library",
   "main": "src/index.js",
   "scripts": {
@@ -16,6 +16,9 @@
     "url": "https://github.com/enactjs/analytics/issues"
   },
   "homepage": "https://github.com/enactjs/analytics#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "eslintConfig": {
     "extends": "enact/strict"
   },
