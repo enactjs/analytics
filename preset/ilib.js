@@ -1,3 +1,10 @@
+/**
+ * Analytics configuration preset for applications using `@enact/i18n`
+ *
+ * @exports configure
+ * @public
+ */
+
 import {memoize} from '@enact/core/util';
 import ilib from '@enact/i18n';
 import ResBundle from '@enact/i18n/ilib/lib/ResBundle';
@@ -40,6 +47,12 @@ const config = {
 	}
 };
 
+/**
+ * Configures `@enact/i18n` application presets
+ *
+ * @function
+ * @param {Object} [cfg] - Additional configuration options
+ */
 const configure = (cfg) => {
 	conf({
 		...cfg,

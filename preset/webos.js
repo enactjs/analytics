@@ -1,3 +1,11 @@
+/**
+ * Analytics configuration preset for webOS applications
+ *
+ * @exports configure
+ * @exports fetchAppConfig
+ * @public
+ */
+
 import {onWindowReady} from '@enact/core/snapshot';
 import {fetchAppId} from '@enact/webos/application';
 import {info} from '@enact/webos/pmloglib';
@@ -13,6 +21,12 @@ const config = {
 	}
 };
 
+/**
+ * Fetches configuration information from the application's installation location
+ *
+ * @function
+ * @param {String} path - The path where the application's `[appId].json` file is located
+ */
 const fetchAppConfig = path => {
 	if (!path) {
 		const appId = fetchAppId();
@@ -37,6 +51,12 @@ const fetchAppConfig = path => {
 	});
 };
 
+/**
+ * Configures webOS application presets
+ *
+ * @function
+ * @param {Object} [cfg] - Additional configuration options
+ */
 const configure = (cfg = {}) => {
 	conf({
 		...config,

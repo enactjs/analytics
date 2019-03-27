@@ -1,3 +1,10 @@
+/**
+ * Analytics configuration preset for webOS TV applications
+ *
+ * @exports configure
+ * @public
+ */
+
 import {forKey} from '@enact/core/handle';
 
 import {config as moonstone} from './moonstone';
@@ -20,6 +27,12 @@ const config = {
 	}
 };
 
+/**
+ * Configures webOS TV application presets
+ *
+ * @function
+ * @param {Object} [cfg] - Additional configuration options
+ */
 const configure = (cfg) => {
 	conf({
 		...config,
