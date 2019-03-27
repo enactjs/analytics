@@ -2,7 +2,7 @@
   "name": "@enact/analytics",
   "version": "0.1.0",
   "description": "Generalized application interaction analytics library",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "enact test"
   },

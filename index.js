@@ -1,6 +1,17 @@
-
 /* global XMLHttpRequest */
-/* eslint no-console: "off" */
+/* eslint-disable no-console */
+
+/**
+ * Provides methods to add and remove global event listeners
+ *
+ * @module analytics
+ * @exports configure
+ * @exports disable
+ * @exports enable
+ * @exports fetchConfig
+ * @exports log
+ * @public
+ */
 
 import {on} from '@enact/core/dispatcher';
 import {adaptEvent, handle, forKey, forEventProp} from '@enact/core/handle';
@@ -14,100 +25,176 @@ import warning from 'warning';
 // When `idle`, accumulates the log events to be processed during the next idle frame or on unload
 const logQueue = [];
 
-// const entryConfig = {
-// 	// An object mapping a DSL for metadata resolution to metadata keys.
-// 	//
-// 	// Resolution DSL:
-// 	//
-// 	//     CssSelector = String
-// 	//     StaticValue = String
-// 	//     AttributeName = String
-// 	//     RegularExpressionString = String
-// 	//     TextContentSelector = '<text>'
-// 	//     ValueContentSelector = '<value>'
-// 	//     CountContentSelector = '<count>'
-// 	//
-// 	//     AttributeSelector = StaticValue |
-// 	//                         '@' + AttributeName |
-// 	//                         TextContentSelector |
-// 	//                         ValueContentSelector |
-// 	//                         CountContentSelector
-// 	//     ClosestSelector = CssSelector
-// 	//     Selector = CssSelector
-// 	//     Matches = CssSelector
-// 	//     Expression = RegularExpressionString
-// 	//
-// 	//     Resolver = AttributeSelector | {
-// 	//         matches?: Matches,
-// 	//         closest?: ClosestSelector | selector?: Selector,
-// 	//         value: Resolver | Resolver[],
-// 	//         expression?: Expression
-// 	//     }
-// 	//
-// 	// ```
-// 	// data: {
-// 	//     panel: {
-// 	//         closest: "article[role='region']",
-// 	//         value: {
-// 	//             selector: "header h1",
-// 	//             value: "<text>"
-// 	//         }
-// 	//     },
-// 	//     icon: {
-// 	//         matches: "[role='button']",
-// 	//         selector: "[class *= 'Icon_icon']",
-// 	//         value: [
-// 	//             '<text>',
-// 	//             {
-// 	//                 value: "style",
-// 	//                 expression: "url\(.*\/(.*)\)"
-// 	//             }
-// 	//         ]
-// 	//     }
-// 	// }
-// 	// ```
-// 	data: null,
+/**
+ * A string representing an attribute of a DOM node.
+ *
+ * Allowed Values:
+ * * Any attribute name preceded by `'@'` (e.g. `'@aria-label'`)
+ * * `'<text>'` for the `textContent` of the node
+ * * `'<value>'` for the `value` of the node
+ * * `'<count>'` for the number of nodes that match the selector
+ *
+ * @typedef {String} AttributeName
+ * @memberof analytics
+ */
 
-// 	// An object of filter rules that remove entries from the log. When null, no events are excluded
-// 	// by the filter.
-// 	exclude: null,
-//	// Optional custom filter function to remove entries from the log
-//	filter: null,
-//
-// 	// An object of filter rules that must be met to be included. When null, any event not excluded
-// 	// by `exclude` will be logged.
-// 	include: null
-// };
+/**
+ * A string representing a CSS selector
+ *
+ * @typedef {String} CssSelector
+ * @memberof analytics
+ */
+
+/**
+ * A string representing a regular expression. Should omit leading and trailing `'/'`s.
+ *
+ * @typedef {String} RegularExpressionString
+ * @memberof analytics
+ */
+
+/**
+ * The string value `'<text>'`
+ * @typedef {String} TextContentSelector
+ * @memberof analytics
+ */
+
+/**
+ * A string representing a CSS selector that matches a DOM node by its attribute(s)
+ *
+ * @typedef {String} AttributeSelector
+ * @memberof analytics
+ */
+
+/**
+ * A string representing a CSS selector that matches an ancestor DOM node
+ *
+ * @typedef {CssSelector} ClosestSelector
+ * @memberof analytics
+ */
+
+/**
+ * A string representing a regular expression to refine the selection of DOM nodes
+ *
+ * @typedef {RegularExpressionString} Expression
+ * @memberof analytics
+ */
+
+/**
+ * A string representing a CSS selector that matches a specific DOM node
+ *
+ * @typedef {CssSelector} Matches
+ * @memberof analytics
+ */
+
+/**
+ * A string representing a CSS selector that matches a descendant DOM node
+ *
+ * @typedef {CssSelector} Selector
+ * @memberof analytics
+ */
+
+/**
+ * An object that conforms to the Resolution DSL
+ *
+ * @typedef {Object} Resolver
+ * @property {Matches} [matches]
+ * @property {ClosestSelector} [closest]
+ * @property {Selector} [selector]
+ * @property {Resolver|Resolver[]|String|AttributeName} value
+ * @property {Expression} [expression]
+ * @memberof analytics
+ * @public
+ */
+
+/**
+ * An object mapping a DSL for metadata resolution to metadata keys. Each key is a
+ * {@link analytics.Resolver}.
+ *
+ * ```
+ * {
+ *     include: {
+ *         // mapping of message key to strings of which the message must include at least one
+ *         panel: 'HOME'
+ *     },
+ *     exclude: {
+ *         // mapping of message key to strings of which the message cannot include any
+ *         label: ['blue', 'purple']
+ *     },
+ *     filter: (msg) => {
+ *         // custom filter function
+ *     },
+ *     data: {
+ *         panel: {
+ *             closest: "article[role='region']",
+ *             value: {
+ *                 selector: "header h1",
+ *                 value: "<text>"
+ *             }
+ *         },
+ *         icon: {
+ *             matches: "[role='button']",
+ *             selector: "[class *= 'Icon_icon']",
+ *             value: [
+ *                 '<text>',
+ *                 {
+ *                     value: "style",
+ *                     expression: "url\(.*\/(.*)\)"
+ *                 }
+ *             ]
+ *         }
+ *     }
+ * }
+ * ```
+ *
+ * @typedef {Object} Entry
+ * @property {Object.<String, String[]|String>} include An object of filter rules that must be met
+ *                                                      to be included. When null, any event not
+ *                                                      excluded by `exclude` will be logged.
+ * @property {Object.<String, String[]|String>} exclude An object of filter rules that remove
+ *                                                      entries from the log. When null, no events
+ *                                                      are excluded by the filter.
+ * @property {Function} filter Optional custom filter function to remove entries from the log
+ * @property {Object.<String, Resolver>} data An object mapping data from the DOM into keys in the
+ *                                            message payload.
+ * @memberof analytics
+ * @public
+ */
+
+/**
+ * @typedef {Object} Listener
+ * @property {Function} filter
+ * @property {Function} [adapter]
+ * @memberof analytics
+ * @public
+ */
+
+/**
+ * The configuration for gathering analytics
+ *
+ * @typedef {Object} Config
+ * @memberof analytics
+ * @property {Boolean} enabled Enables metric logging.
+ * @property {Function} format Function accepting the message -- which includes the time, type,
+ *                             label, and output of `data` resolvers -- and returning a log entry in
+ *                             whichever format the application chooses.
+ * @property {Number} frameSize Defines the amount of time in milliseconds the logger will spend
+ *                              processing events. Only effective when `idle` is true.
+ * @property {Boolean} idle Process events asynchronously when the system is idle
+ * @property {String[]|Object.<String, Listener> Array of events or object mapping events to filter
+ *                                               functions.
+ * @property {Function} log Required application-defined function to log the events
+ * @property {String} selector A CSS selector which finds the closest ancestor from the target of an
+ *                             event to consider as the source for the purposes of logging
+ */
 
 const config = {
-	// Enables metric logging
 	enabled: false,
-
-	// Function accepting the message -- which includes the time, type, label, and output of `data`
-	// resolvers -- and returning a log entry in whichever format the application chooses.
+	entries: null,
 	format: null,
-
-	// Defines the amount of time in milliseconds the logger will spend processing events. Only
-	// effective when `idle` is true
 	frameSize: 100,
-
-	// Process events asynchronous when the system is idle
 	idle: true,
-
-	// Array of events or object mapping events to filter functions
-	// listeners: ['focus', 'load']
-	// listeners: {
-	//     focus: (ev) => ev.nodeName === 'button' // only report on focus events for buttons
-	// }
 	listeners: null,
-
-	// Required application-defined function to log the events
 	log: null,
-
-	rules: null,
-
-	// A CSS selector which finds the closest ancestor from the target of an event to consider as
-	// the source for the purposes of logging
 	selector: '[data-metric-label]'
 };
 
@@ -122,7 +209,14 @@ const sanitize = (str) => str.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&');
 
 // Logging
 
-// Logs messages currently in the queue. Logging is limited to the `frameSize` unless `all` is true
+/**
+ * Logs messages currently in the queue. Logging is limited to the `frameSize` unless `all` is true
+ *
+ * @type {Function}
+ * @param {Boolean} all - if truthy, flush the log queue
+ *
+ * @private
+ */
 const flushLogQueue = (all) => {
 	if (config.log) {
 		const endBy = all ? 0 : Date.now() + config.frameSize;
@@ -135,7 +229,15 @@ const flushLogQueue = (all) => {
 
 const isGlobal = target => target === document || target === document.body;
 
-// Resolves the closest ancestor of a node that matches `selector`
+/**
+ * Resolves the closest ancestor of a node that matches `selector`
+ *
+ * @type {Function}
+ * @param {Node} target - the descendant node where resolution should begin
+ *
+ * @returns {Node}
+ * @private
+ */
 const closest = (target) => {
 	if (isGlobal(target) || !config.selector || !target) {
 		return target;
@@ -185,9 +287,17 @@ const resolveAttribute = (name) => (node) => {
 	return first.getAttribute(name.substr(1));
 };
 
-// Returns a function that accepts a value and uses the provided expression to match against that
-// value. If the expression includes a capture group, the first capture group is returned. If not,
-// the matched expression is returned.
+/**
+ * Returns a function that accepts a value and uses the provided expression to match against that
+ * value. If the expression includes a capture group, the first capture group is returned. If not,
+ * the matched expression is returned.
+ *
+ * @type {Function}
+ * @param {String} expression - the expression the returned function will use to match against the provided value
+ *
+ * @returns {Function}
+ * @private
+ */
 const resolveExpression = (expression) => {
 	if (expression) {
 		try {
@@ -216,8 +326,17 @@ const resolveExpression = (expression) => {
 	return v => v;
 };
 
-// Resolves the target node to either the nearest ancestor or descendant based on the provided
-// selectors. Only one selector is supported per resolver but may be omitted.
+/**
+ * Resolves the target node to either the nearest ancestor or descendant based on the provided
+ * selectors. Only one selector is supported per resolver but may be omitted.
+ *
+ * @type {Function}
+ * @param {String} closestSelector - the ancestor selector
+ * @param {String} selector - the descendant selector. If `closestSelector` is provided, `selector` will be ignored
+ *
+ * @returns {Function}
+ * @private
+ */
 const resolveNode = (closestSelector, selector) => (node) => {
 	if (!node) return null;
 	if (closestSelector) {
@@ -338,13 +457,14 @@ const idle = (msg) => {
 };
 
 const matchEntry = (ev) => {
-	if (!config.rules) return format({}, ev);
+	if (!config.entries || config.entries.length === 0) return;
 
-	return config.rules.reduce((result, entry) => {
+	return config.entries.reduce((result, entry) => {
 		if (result) return result;
 
 		const msg = format(entry, ev);
-		if (msg && filter(entry, msg)) {
+		// console.log(msg);
+		if (filter(entry, msg)) {
 			return msg;
 		}
 	}, null);
@@ -360,7 +480,14 @@ const logEntry = (msg) => {
 	}
 };
 
-// Accepts an event to consider for logging
+/**
+ * Accepts an event to consider for logging
+ *
+ * @type {Function}
+ * @param {Event} ev - the event to log
+ *
+ * @memberof analytics
+ */
 const log = (ev) => logEntry(matchEntry({
 	...ev,
 	target: closest(ev.target)
@@ -394,7 +521,12 @@ const addListener = ({type, filter: listener, adapter}) => {
 	return handler;
 };
 
-// Disables logging
+/**
+ * Disables logging
+ *
+ * @type {Function}
+ * @memberof analytics
+ */
 const disable = () => {
 	config.enabled = false;
 	if (logQueue.length > 0) {
@@ -402,7 +534,12 @@ const disable = () => {
 	}
 };
 
-// Enables Logging
+/**
+ * Enables Logging
+ *
+ * @type {Function}
+ * @memberof analytics
+ */
 const enable = () => {
 	config.enabled = true;
 };
@@ -417,9 +554,16 @@ const configureEntry = (cfg = {}) => {
 	return entry;
 };
 
-// Configures the logging behavior
+/**
+ * Configures the analytics behavior
+ *
+ * @type {Function}
+ * @param {Config} cfg - new configuration for analytics
+ *
+ * @private
+ */
 const configure = (cfg = {}) => {
-	if (Array.isArray(cfg.rules))        config.rules = cfg.rules.map(configureEntry);
+	if (Array.isArray(cfg.entries))        config.entries = cfg.entries.map(configureEntry);
 	if (typeof cfg.format === 'function')  config.format = cfg.format;
 	if (typeof cfg.frameSize === 'number') config.frameSize = cfg.frameSize;
 	if (typeof cfg.idle === 'boolean')     config.idle = cfg.idle;
@@ -439,9 +583,17 @@ const configure = (cfg = {}) => {
 	});
 };
 
-// Retrieves a JSON-formatted config using XHR. The `options` for `xhr` are supported as well as a
-// `parse` callback that will receive the raw HTTP response body and which must return a valid
-// config object.
+/**
+ * Retrieves a JSON-formatted config using XHR. The `options` for `xhr` are supported as well as a
+ * `parse` callback that will receive the raw HTTP response body and which must return a valid
+ * config object.
+ *
+ * @type {Function}
+ * @param {String} url - the URI for the location of the configuration
+ * @param {Object} options - options to pass to XHR
+ *
+ * @memberof analytics
+ */
 const fetchConfig = (url, options = {}) => {
 	if (typeof XMLHttpRequest !== 'undefined') {
 		xhr.XMLHttpRequest = XMLHttpRequest || xhr.XMLHttpRequest;
