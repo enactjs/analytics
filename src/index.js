@@ -109,7 +109,7 @@ const logQueue = [];
 
 /**
  * An object mapping a DSL for metadata resolution to metadata keys. Each key is a
- * {@link analytics.Resolver}.
+ * [Resolver]{@link analytics.Resolver}.
  *
  * ```
  * {
@@ -181,7 +181,7 @@ const logQueue = [];
  * @property {Number} frameSize Defines the amount of time in milliseconds the logger will spend
  *                              processing events. Only effective when `idle` is true.
  * @property {Boolean} idle Process events asynchronously when the system is idle
- * @property {String[]|Object.<String, Listener> Array of events or object mapping events to filter
+ * @property {String[]|Object.<String, Listener>} listeners Array of events or object mapping events to filter
  *                                               functions.
  * @property {Function} log Required application-defined function to log the events
  * @property {String} selector A CSS selector which finds the closest ancestor from the target of an
@@ -213,8 +213,9 @@ const sanitize = (str) => str.replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&');
 /**
  * Logs messages currently in the queue. Logging is limited to the `frameSize` unless `all` is true
  *
- * @type {Function}
+ * @function
  * @param {Boolean} all - if truthy, flush the log queue
+ * @returns undefined
  *
  * @private
  */
@@ -233,7 +234,7 @@ const isGlobal = target => target === document || target === document.body;
 /**
  * Resolves the closest ancestor of a node that matches `selector`
  *
- * @type {Function}
+ * @function
  * @param {Node} target - the descendant node where resolution should begin
  *
  * @returns {Node}
@@ -293,9 +294,8 @@ const resolveAttribute = (name) => (node) => {
  * value. If the expression includes a capture group, the first capture group is returned. If not,
  * the matched expression is returned.
  *
- * @type {Function}
+ * @function
  * @param {String} expression - the expression the returned function will use to match against the provided value
- *
  * @returns {Function}
  * @private
  */
@@ -331,10 +331,9 @@ const resolveExpression = (expression) => {
  * Resolves the target node to either the nearest ancestor or descendant based on the provided
  * selectors. Only one selector is supported per resolver but may be omitted.
  *
- * @type {Function}
+ * @function
  * @param {String} closestSelector - the ancestor selector
  * @param {String} selector - the descendant selector. If `closestSelector` is provided, `selector` will be ignored
- *
  * @returns {Function}
  * @private
  */
@@ -483,8 +482,9 @@ const logEntry = (msg) => {
 /**
  * Accepts an event to consider for logging
  *
- * @type {Function}
+ * @function
  * @param {Event} ev - the event to log
+ * @returns undefined
  *
  * @memberof analytics
  */
@@ -524,7 +524,8 @@ const addListener = ({type, filter: listener, adapter}) => {
 /**
  * Disables logging
  *
- * @type {Function}
+ * @function
+ * @returns undefined
  * @memberof analytics
  */
 const disable = () => {
@@ -537,7 +538,8 @@ const disable = () => {
 /**
  * Enables Logging
  *
- * @type {Function}
+ * @function
+ * @returns undefined
  * @memberof analytics
  */
 const enable = () => {
@@ -557,10 +559,10 @@ const configureEntry = (cfg = {}) => {
 /**
  * Configures the analytics behavior
  *
- * @type {Function}
+ * @function
  * @param {Config} cfg - new configuration for analytics
- *
- * @private
+ * @returns undefined
+ * @memberof analytics
  */
 const configure = (cfg = {}) => {
 	if (Array.isArray(cfg.rules))        config.rules = cfg.rules.map(configureEntry);
@@ -588,9 +590,10 @@ const configure = (cfg = {}) => {
  * `parse` callback that will receive the raw HTTP response body and which must return a valid
  * config object.
  *
- * @type {Function}
+ * @function
  * @param {String} url - the URI for the location of the configuration
  * @param {Object} options - options to pass to XHR
+ * @returns undefined
  *
  * @memberof analytics
  */
