@@ -1,4 +1,4 @@
-import {configure as conf} from '../index';
+import {configure as conf} from '..';
 
 const config = {
 	'selector': '.spottable'
