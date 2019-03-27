@@ -1,4 +1,4 @@
-# @enact/analytics
+# @enact/analytics [![npm (scoped)](https://img.shields.io/npm/v/@enact/analytics.svg?style=flat-square)](https://www.npmjs.com/package/@enact/analytics)
 
 > A generalized application interaction analytics library
 
