@@ -1,3 +1,4 @@
+
 /* global XMLHttpRequest */
 /* eslint-disable no-console */
 
@@ -189,12 +190,12 @@ const logQueue = [];
 
 const config = {
 	enabled: false,
-	entries: null,
 	format: null,
 	frameSize: 100,
 	idle: true,
 	listeners: null,
 	log: null,
+	rules: null,
 	selector: '[data-metric-label]'
 };
 
@@ -457,14 +458,13 @@ const idle = (msg) => {
 };
 
 const matchEntry = (ev) => {
-	if (!config.entries || config.entries.length === 0) return;
+	if (!config.rules) return format({}, ev);
 
-	return config.entries.reduce((result, entry) => {
+	return config.rules.reduce((result, entry) => {
 		if (result) return result;
 
 		const msg = format(entry, ev);
-		// console.log(msg);
-		if (filter(entry, msg)) {
+		if (msg && filter(entry, msg)) {
 			return msg;
 		}
 	}, null);
@@ -563,7 +563,7 @@ const configureEntry = (cfg = {}) => {
  * @private
  */
 const configure = (cfg = {}) => {
-	if (Array.isArray(cfg.entries))        config.entries = cfg.entries.map(configureEntry);
+	if (Array.isArray(cfg.rules))        config.rules = cfg.rules.map(configureEntry);
 	if (typeof cfg.format === 'function')  config.format = cfg.format;
 	if (typeof cfg.frameSize === 'number') config.frameSize = cfg.frameSize;
 	if (typeof cfg.idle === 'boolean')     config.idle = cfg.idle;
