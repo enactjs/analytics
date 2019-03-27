@@ -2,7 +2,7 @@ import {onWindowReady} from '@enact/core/snapshot';
 import {fetchAppId} from '@enact/webos/application';
 import {info} from '@enact/webos/pmloglib';
 
-import {configure as conf, fetchConfig} from '../index';
+import {configure as conf, fetchConfig} from '..';
 
 let messageId = 'NL_ENACT';
 
