@@ -57,7 +57,7 @@ const fetchAppConfig = path => {
  * Configures webOS application presets
  *
  * @function
- * @param {Object} [cfg] - Additional configuration options
+ * @param {Object} [cfg] - Additional configuration options. See {@link analytics.Config}.
  * @memberof analytics/preset/webos
  */
 const configure = (cfg = {}) => {
