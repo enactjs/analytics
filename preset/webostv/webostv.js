@@ -1,6 +1,7 @@
 /**
  * Analytics configuration preset for webOS TV applications
  *
+ * @module analytics/preset/webostv
  * @exports configure
  * @public
  */
@@ -32,6 +33,7 @@ const config = {
  *
  * @function
  * @param {Object} [cfg] - Additional configuration options
+ * @memberof analytics/preset/webostv
  */
 const configure = (cfg) => {
 	conf({

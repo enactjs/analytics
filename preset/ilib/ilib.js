@@ -1,6 +1,7 @@
 /**
  * Analytics configuration preset for applications using `@enact/i18n`
  *
+ * @module analytics/preset/ilib
  * @exports configure
  * @public
  */
@@ -52,6 +53,7 @@ const config = {
  *
  * @function
  * @param {Object} [cfg] - Additional configuration options
+ * @memberof analytics/preset/ilib
  */
 const configure = (cfg) => {
 	conf({

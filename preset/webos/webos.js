@@ -1,6 +1,7 @@
 /**
  * Analytics configuration preset for webOS applications
  *
+ * @module analytics/preset/webos
  * @exports configure
  * @exports fetchAppConfig
  * @public
@@ -26,6 +27,7 @@ const config = {
  *
  * @function
  * @param {String} path - The path where the application's `[appId].json` file is located
+ * @memberof analytics/preset/webos
  */
 const fetchAppConfig = path => {
 	if (!path) {
@@ -56,6 +58,7 @@ const fetchAppConfig = path => {
  *
  * @function
  * @param {Object} [cfg] - Additional configuration options
+ * @memberof analytics/preset/webos
  */
 const configure = (cfg = {}) => {
 	conf({
