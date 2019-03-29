@@ -6,7 +6,7 @@
  * @public
  */
 
-import {configure as conf} from '..';
+import {configure as conf} from '../..';
 
 const config = {
 	'selector': '.spottable'

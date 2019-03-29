@@ -8,9 +8,9 @@
 
 import {forKey} from '@enact/core/handle';
 
-import {config as moonstone} from './moonstone';
-import {config as ilib} from './ilib';
-import {config as webos, configure as conf} from './webos';
+import {config as moonstone} from '../moonstone';
+import {config as ilib} from '../ilib';
+import {config as webos, configure as conf} from '../webos';
 
 const adapter = (keyName) => keyName ? {keyName} : null;
 

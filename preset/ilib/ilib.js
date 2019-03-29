@@ -10,7 +10,7 @@ import {memoize} from '@enact/core/util';
 import ilib from '@enact/i18n';
 import ResBundle from '@enact/i18n/ilib/lib/ResBundle';
 
-import {configure as conf} from '..';
+import {configure as conf} from '../..';
 
 const memoMapper = memoize((/* locale */) => {
 	// Retrieve the ResBundle to get access to the string map for the current locale.
