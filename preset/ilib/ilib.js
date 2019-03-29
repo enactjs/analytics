@@ -52,7 +52,7 @@ const config = {
  * Configures `@enact/i18n` application presets
  *
  * @function
- * @param {Object} [cfg] - Additional configuration options
+ * @param {Object} [cfg] - Additional configuration options. See {@link analytics.Config}.
  * @memberof analytics/preset/ilib
  */
 const configure = (cfg) => {

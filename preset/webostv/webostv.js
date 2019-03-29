@@ -32,7 +32,7 @@ const config = {
  * Configures webOS TV application presets
  *
  * @function
- * @param {Object} [cfg] - Additional configuration options
+ * @param {Object} [cfg] - Additional configuration options. See {@link analytics.Config}.
  * @memberof analytics/preset/webostv
  */
 const configure = (cfg) => {
