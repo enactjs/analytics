@@ -148,13 +148,13 @@ const logQueue = [];
  * ```
  *
  * @typedef {Object} Entry
- * @property {Object.<String, String[]|String>} include An object of filter rules that must be met
- *                                                      to be included. When null, any event not
+ * @property {Object.<String, String[]|String>} [include] An object of filter rules that must be met
+ *                                                      to be included. When `null`, any event not
  *                                                      excluded by `exclude` will be logged.
- * @property {Object.<String, String[]|String>} exclude An object of filter rules that remove
- *                                                      entries from the log. When null, no events
+ * @property {Object.<String, String[]|String>} [exclude] An object of filter rules that remove
+ *                                                      entries from the log. When `null`, no events
  *                                                      are excluded by the filter.
- * @property {Function} filter Optional custom filter function to remove entries from the log
+ * @property {Function} [filter] Optional custom filter function to remove entries from the log
  * @property {Object.<String, Resolver>} data An object mapping data from the DOM into keys in the
  *                                            message payload.
  * @memberof analytics
@@ -174,17 +174,18 @@ const logQueue = [];
  *
  * @typedef {Object} Config
  * @memberof analytics
- * @property {Boolean} enabled Enables metric logging.
- * @property {Function} format Function accepting the message -- which includes the time, type,
+ * @property {Boolean} [enabled] Enables metric logging.
+ * @property {Function} [format] Function accepting the message -- which includes the time, type,
  *                             label, and output of `data` resolvers -- and returning a log entry in
  *                             whichever format the application chooses.
- * @property {Number} frameSize Defines the amount of time in milliseconds the logger will spend
+ * @property {Number} [frameSize] Defines the amount of time in milliseconds the logger will spend
  *                              processing events. Only effective when `idle` is true.
- * @property {Boolean} idle Process events asynchronously when the system is idle
- * @property {String[]|Object.<String, Listener>} listeners Array of events or object mapping events to filter
+ * @property {Boolean} [idle] Process events asynchronously when the system is idle
+ * @property {String[]|Object.<String, Listener>} [listeners] Array of events or object mapping events to filter
  *                                               functions.
  * @property {Function} log Required application-defined function to log the events
- * @property {String} selector A CSS selector which finds the closest ancestor from the target of an
+ * @property {Rules[]} [rules] A set of rules defining the data to be collected.
+ * @property {String} [selector] A CSS selector which finds the closest ancestor from the target of an
  *                             event to consider as the source for the purposes of logging
  */
 

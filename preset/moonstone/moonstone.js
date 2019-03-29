@@ -16,7 +16,7 @@ const config = {
  * Configures Moonstone application presets
  *
  * @function
- * @param {Object} [cfg] - Additional configuration options
+ * @param {analytics.Config} [cfg] - Additional configuration options
  * @memberof analytics/preset/moonstone
  */
 const configure = (cfg) => {
