@@ -10,7 +10,7 @@ import {forKey} from '@enact/core/handle';
 
 import {config as moonstone} from '../moonstone';
 import {config as ilib} from '../ilib';
-import {config as webos, configure as conf} from '../webos';
+import {config as webos, configure as conf, configureFromScript as confJS} from '../webos';
 
 const adapter = (keyName) => keyName ? {keyName} : null;
 
@@ -42,8 +42,23 @@ const configure = (cfg) => {
 	});
 };
 
+/**
+ * Configures webOS TV application presets using an external script
+ *
+ * @function
+ * @param {Object} [cfg] - Additional configuration options. See {@link analytics.Config}.
+ * @memberof analytics/preset/webos
+ */
+const configureFromScript = (cfg) => {
+	confJS({
+		...config,
+		...cfg
+	});
+};
+
 export default configure;
 export {
 	config,
-	configure
+	configure,
+	configureFromScript
 };

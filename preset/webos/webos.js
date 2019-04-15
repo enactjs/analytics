@@ -69,9 +69,50 @@ const configure = (cfg = {}) => {
 	onWindowReady(() => fetchAppConfig(cfg.path));
 };
 
+/**
+ * Configures webOS application presets using an external script
+ *
+ * @function
+ * @param {Object} [cfg] - Additional configuration options. See {@link analytics.Config}.
+ * @memberof analytics/preset/webos
+ */
+const configureFromScript = (cfg = {}) => {
+	conf({
+		...config,
+		...cfg
+	});
+
+	return new Promise((resolve, reject) => {
+		onWindowReady(() => {
+			if (!cfg.path) {
+				const appId = fetchAppId();
+
+				// if we lack a path and can't parse an app id, we won't be able to
+				// retrieve a local config file so bail out
+				if (!appId) return;
+
+				cfg.path = `/mnt/lg/cmn_data/whitelist/dr/enact/${appId}.js`;
+			}
+
+			const script = document.createElement('script');
+			script.src = cfg.path;
+			script.type = 'text/javascript';
+			script.onload = function () {
+				conf();
+				resolve();
+			};
+			script.onerror = function (e) {
+				reject(e);
+			};
+			document.head.appendChild(script);
+		});
+	});
+};
+
 export default configure;
 export {
 	config,
 	configure,
+	configureFromScript,
 	fetchAppConfig
 };
