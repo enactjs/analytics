@@ -566,6 +566,7 @@ const configureEntry = (cfg = {}) => {
  * @memberof analytics
  */
 const configure = (cfg = {}) => {
+	if (global._analyticsConfig) cfg = Object.assign({}, cfg, global._analyticsConfig);
 	if (Array.isArray(cfg.rules))        config.rules = cfg.rules.map(configureEntry);
 	if (typeof cfg.format === 'function')  config.format = cfg.format;
 	if (typeof cfg.frameSize === 'number') config.frameSize = cfg.frameSize;
