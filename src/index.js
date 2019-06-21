@@ -255,10 +255,26 @@ const buildRuleset = ruleset => Object.keys(ruleset).reduce((result, key) => {
 	return result;
 }, {});
 
+const matchesRule = (rule, value) => value && rule.test(value);
+
+const matchesRules = (ruleset, msg) => {
+	const keys = Object.keys(ruleset);
+	const count = keys.filter(key => matchesRule(ruleset[key], msg[key])).length;
+
+	switch (count) {
+		case 0:
+			return 'NONE';
+		case keys.length:
+			return 'ALL';
+		default:
+			return 'SOME';
+	}
+};
+
 // Determines if the message matches a set of rules
-const matchesRules = (ruleset, msg) => Object.keys(ruleset).some(key => {
-	return !!msg[key] && ruleset[key].test(msg[key]);
-});
+const matchesAnyRules = (ruleset, msg) => matchesRules(ruleset, msg) !== 'NONE';
+
+const matchesAllRules = (ruleset, msg) => matchesRules(ruleset, msg) === 'ALL';
 
 const getFirstNode = (nodeOrList) => {
 	return nodeOrList instanceof global.HTMLElement ? nodeOrList : nodeOrList[0];
@@ -399,9 +415,10 @@ const buildDataResolver = (data) => {
 // filter function.
 const filter = (entry, msg) => {
 	if (
-		(entry.exclude && matchesRules(entry.exclude, msg)) ||
-		(entry.include && !matchesRules(entry.include, msg))
+		(entry.exclude && matchesAnyRules(entry.exclude, msg)) ||
+		(entry.include && !matchesAllRules(entry.include, msg))
 	) {
+
 		return false;
 	}
 
