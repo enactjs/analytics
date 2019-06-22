@@ -303,7 +303,11 @@ const resolveAttribute = (name) => (node) => {
 		return first.type === 'password' ? null : first.value;
 	}
 
-	return first.getAttribute(name.substr(1));
+	if (first instanceof global.HTMLElement) {
+		return first.getAttribute(name.substr(1));
+	}
+
+	return null;
 };
 
 /**
