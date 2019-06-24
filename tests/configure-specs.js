@@ -101,7 +101,7 @@ describe('configure', () => {
 			const log = mountTriggerEvent({rules: [{include}], target: '#aria-button'});
 			expect(log.mock.calls.length).toBe(1);
 		});
-		test('existing keys, which does not match all conditions, allows log entry in output', () => {
+		test('existing keys, which do not match all conditions, excludes log entry in output', () => {
 			const include = {label: ['Click', 'Other'], alt: 'alt'};
 			const log = mountTriggerEvent({rules: [{include, data: {alt: '@alt'}}], target: '#test-target'});
 			expect(log.mock.calls.length).toBe(0);
