@@ -114,7 +114,7 @@ const logQueue = [];
  * ```
  * {
  *     include: {
- *         // mapping of message key to strings of which the message must include at least one
+ *         // mapping of message key to strings of which the message must include all
  *         panel: 'HOME'
  *     },
  *     exclude: {
@@ -184,7 +184,7 @@ const logQueue = [];
  * @property {String[]|Object.<String, Listener>} [listeners] Array of events or object mapping events to filter
  *                                               functions.
  * @property {Function} log Required application-defined function to log the events
- * @property {Rules[]} [rules] A set of rules defining the data to be collected.
+ * @property {Entry[]} [rules] A set of rules defining the data to be collected.
  * @property {String} [selector] A CSS selector which finds the closest ancestor from the target of an
  *                             event to consider as the source for the purposes of logging
  */
