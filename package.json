@@ -1,10 +1,11 @@
 {
   "name": "@enact/analytics",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "Generalized application interaction analytics library",
   "main": "src/index.js",
   "scripts": {
-    "test": "enact test"
+    "test": "enact test",
+    "transpile": "enact transpile"
   },
   "repository": {
     "type": "git",
