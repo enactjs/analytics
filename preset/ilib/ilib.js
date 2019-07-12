@@ -8,7 +8,7 @@
 
 import {memoize} from '@enact/core/util';
 import ilib from '@enact/i18n';
-import ResBundle from '@enact/i18n/ilib/lib/ResBundle';
+import ResBundle from 'ilib/lib/ResBundle';
 
 import {configure as conf} from '../..';
 
