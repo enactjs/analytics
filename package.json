@@ -30,7 +30,11 @@
     "warning": "^4.0.3",
     "xhr": "^2.5.0"
   },
+  "peerDependencies": {
+    "ilib": "^14.2.0 || ^14.2.0-webostv1"
+  },
   "devDependencies": {
-    "react": "^16.8.1"
+    "react": "^16.8.1",
+    "ilib": "^14.2.0"
   }
 }
