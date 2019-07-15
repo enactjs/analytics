@@ -2,6 +2,10 @@
 
 The following is a curated list of changes in the @enact/analytics project, newest changes on the top.
 
+## [1.0.0] - 2019-07-15
+
+Initial stable release. Added support for `ilib` peer dependency as part of relocation out of `@enact/i18n`.
+
 ## [1.0.0-beta.3] - 2019-07-11
 
 Updated dependencies for Enact libraries to a broader `^2 || ^3.0.0-alpha.1 || ^3` rangeset.
