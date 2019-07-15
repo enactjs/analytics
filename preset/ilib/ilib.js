@@ -1,8 +1,16 @@
+/**
+ * Analytics configuration preset for applications using `@enact/i18n`
+ *
+ * @module analytics/preset/ilib
+ * @exports configure
+ * @public
+ */
+
 import {memoize} from '@enact/core/util';
 import ilib from '@enact/i18n';
-import ResBundle from '@enact/i18n/ilib/lib/ResBundle';
+import ResBundle from 'ilib/lib/ResBundle';
 
-import {configure as conf} from '..';
+import {configure as conf} from '../..';
 
 const memoMapper = memoize((/* locale */) => {
 	// Retrieve the ResBundle to get access to the string map for the current locale.
@@ -40,6 +48,13 @@ const config = {
 	}
 };
 
+/**
+ * Configures `@enact/i18n` application presets
+ *
+ * @function
+ * @param {Object} [cfg] - Additional configuration options. See {@link analytics.Config}.
+ * @memberof analytics/preset/ilib
+ */
 const configure = (cfg) => {
 	conf({
 		...cfg,
