@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 /**
  * Analytics configuration preset for webOS applications
  *
