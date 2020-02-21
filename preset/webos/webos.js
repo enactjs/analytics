@@ -40,17 +40,21 @@ const fetchAppConfig = path => {
 		path = `/mnt/lg/cmn_data/whitelist/dr/enact/${appId}.json`;
 	}
 
-	fetchConfig(path, {
-		sync: true,
-		parse: (body) => {
-			const json = JSON.parse(body);
-			if (json.messageId) {
-				messageId = json.messageId;
-			}
+	try {
+		fetchConfig(path, {
+			sync: true,
+			parse: (body) => {
+				const json = JSON.parse(body);
+				if (json.messageId) {
+					messageId = json.messageId;
+				}
 
-			return json;
-		}
-	});
+				return json;
+			}
+		});
+	} catch (e) {
+		console.error('@enact/analytics/preset/webos: Unable to retrieve configuration from', path);
+	}
 };
 
 /**
