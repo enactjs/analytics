@@ -2,6 +2,10 @@
 
 The following is a curated list of changes in the @enact/analytics project, newest changes on the top.
 
+## [1.0.1] - 2020-04-10
+
+* Added try/catch around XHR in `webos` preset to handle error cases.
+
 ## [1.0.0] - 2019-07-15
 
 Initial stable release. Added support for `ilib` peer dependency as part of relocation out of `@enact/i18n`.
